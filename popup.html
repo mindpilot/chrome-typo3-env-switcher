@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TYPO3 ENV Switcher - Popup</title>
+  <link rel="stylesheet" type="text/css" href="popup.css">
+</head>
+<body>
+<header class="popup-header">
+  <div class="logo-env-switcher"><img src="icons/logo-env-switcher-horizontal.svg" alt="Logo ENV-Switcher" /> </div>
+  <button id="copy-button" class="hidden">Copy UID</button>
+</header>
+<div id="loading">Looking for <code>&lt;body data-uid="*"&gt;</code></div>
+<div id="message" class="hidden">Sorry, there is <strong>no UID found in the markup of this page.</strong> Open the settings page for more info on how to configure your site and the plugin.</div>
+<div id="details-container" class="hidden">
+    <p id="page-title"></p>
+    <div id="user-message" class="user-message hidden" aria-hidden="true">Copied!</div>
+    <div id="additional-links" class="hidden">
+        <span>Backend</span>
+        <a href="#" target="_blank" id="be-link">no backend link</a>
+    </div>
+    <div id="environments" class="flex-container"></div>
+</div>
+<footer class="popup-footer">
+  <div class="keyboard-hint"></div>
+  <a href="#" id="open-settings" class="settings-link"><span class="icon icon-cogwheel"></span></a>
+</footer>
+
+<script src="popup.js"></script>
+</body>
+</html>

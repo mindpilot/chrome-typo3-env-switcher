@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Environment Switcher - Settings</title>
+  <link rel="stylesheet" type="text/css" href="settings.css">
+</head>
+<body>
+<header class="settings-header">
+  <h1><img src="icons/logo-env-switcher-horizontal-negative.svg" height="19" alt="Logo TYPO3 Env Switcher"/></h1>
+  <button id="close-settings" class="close-btn" title="Close settings"><img src="icons/x.svg" alt="Close" /></button>
+</header>
+
+<div class="settings-layout">
+  <nav class="settings-nav">
+    <ul>
+      <li><a href="#" class="nav-link active" data-section="projects">Projects</a></li>
+      <li><a href="#" class="nav-link" data-section="help">Help</a></li>
+      <li><a href="#" class="nav-link" data-section="about">About</a></li>
+    </ul>
+  </nav>
+
+  <main class="settings-content">
+    <!-- Projects Section -->
+    <section id="section-projects" class="content-section active">
+      <div class="project-selector">
+        <label for="project-select">Projects Settings</label>
+        <select id="project-select"></select>
+      </div>
+
+      <div id="project-detailswrap">
+        <div style="display: flex; justify-content: space-between">
+        <div id="project-details"></div>
+
+        <div class="toggle-setting">
+          <label for="show-color-badge">Badge</label>
+          <button id="show-color-badge" class="toggle-btn" title="Toggle color badge overlay">
+            <img src="icons/toggle-left.svg" alt="Off" />
+          </button>
+        </div>
+        </div>
+
+        <h3>Environments</h3>
+        <div id="environments-edit-container">
+          <!-- Environments will be rendered here -->
+        </div>
+        <div class="muted">Choose a short name. White badges are transparent.</div>
+
+        <div class="environment new">
+          <input type="text" id="new-env-name" class="name" placeholder="Short name">
+          <input type="text" id="new-env-domain" class="domain" placeholder="(sub.)domain">
+          <input type="text" id="new-env-tld" class="tld" placeholder="tld">
+          <button id="add-environment" title="Add new environment" disabled>+</button>
+        </div>
+        <div class="button-container">
+          <button id="remove-project" class="destructive">Remove this project</button>
+        </div>
+      </div>
+
+      <div class="button-container">
+        <button id="add-project"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add Project</button>
+      </div>
+
+      <div class="import-export-section">
+        <h2>Import/Export</h2>
+        <div class="button-container">
+          <button id="export-settings"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>Export Settings</button>
+          <input type="file" id="import-file-input" accept=".json" style="display: none;">
+          <button id="import-settings"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 9-6-6-6 6"/><path d="M12 3v14"/><path d="M5 21h14"/></svg>Import Settings</button>
+        </div>
+        <div id="import-export-message" class="message hidden"></div>
+      </div>
+    </section>
+
+    <!-- Help Section -->
+    <section id="section-help" class="content-section">
+      <h1>Help</h1>
+      <h2>Using the Extension</h2>
+      <img src="docs/popup-switcher.png" alt="Screenshot of the popup" style="max-width: 100%; border: 1px solid #bfbfbf; margin-bottom: 16px;">
+      <table>
+        <tr>
+          <td><img src="docs/card-default.svg" alt="icon" width="32" /> </td>
+          <td><strong>Environments</strong> </td>
+          <td>Open the current page in the frontend or the List/Page module of another environment. Project environments are detected based on the current page's URL.</td>
+        </tr>
+        <tr>
+          <td><img src="docs/card-pinned.svg" alt="triangle orange" width="32" /></td>
+          <td><strong>Favourite</strong> </td>
+          <td>Click the upper-right corner to pin an environment to the right side of the list.</td>
+        </tr>
+        <tr>
+          <td><img src="docs/icon-badge.svg" alt="triangle orange" width="32" /></td>
+          <td><strong>Badge</strong> </td>
+          <td>Add and enable color badges in the project settings.</td>
+        </tr>
+      </table>
+
+      <h2 id="project-setup">Project Setup</h2>
+      <ol>
+        <li>Click "Add Project" to create a new project under "<a href="#" class="nav-link" data-section="projects">Projects</a>"</li>
+        <li>Give your project a short descriptive label</li>
+        <li>Add environments by filling in the name (keep it short), domain, and TLD fields</li>
+        <li>Click the "+" button to add each environment</li>
+      </ol>
+
+      <p>Use the import/export feature to backup and share your settings with team mates as json file.</p>
+
+      <h2 id="typo3-setup">TYPO3 Setup</h2>
+      <div class="warning-box">
+        <p><strong>Important:</strong>
+          <ul>
+        <li>To enable page UID detection, you need to add specific markup to your TYPO3 site's
+        templates.</li><li>Deep linking to the List or Page module only works from TYPO3 version > 11.x.</li>
+      </ul>
+      </div>
+      <h4>Add one of the following settings to your TypoScript PAGE object.</h4>
+
+      <p>add <code>data-uid="1"</code> to the body tag of our template: <code>&lt;body data-uid="1"&gt;</code></p>
+      <pre>
+page = PAGE
+page {
+  ...
+  bodyTagCObject = COA
+  bodyTagCObject {
+    wrap = <body|>
+
+    20 = TEXT
+    20.value.field = uid
+    20.stdWrap.noTrimWrap = | data-uid="|"|
+  }
+  ...
+}
+</pre>
+
+      <p>or add a <code>&lt;meta name="pageid" content="&lt;pageid&gt;"&gt;</code> meta-tag to the head section </p>
+<pre>
+page = PAGE
+page.meta {
+  ...
+  pageID.data = TSFE:id
+  ...
+}
+</pre>
+
+    </section>
+
+    <!-- About Section -->
+    <section id="section-about" class="content-section">
+      <h1>About </h1>
+
+      <table>
+        <tr>
+          <th>Version</th>
+          <td>1.0</td>
+        </tr>
+        <tr>
+          <th>Requirements</th>
+          <td>TYPO3 Version &#8805; 11.x</td>
+        </tr>
+        <tr>
+          <th>Author</th>
+          <td>Andy Meier andy@mindpilot.ch</td>
+        </tr>
+        <tr>
+          <th>Github</th>
+          <td><a href="https://github.com/mindpilot/chrome-typo3-env-switcher" target="_blank">https://github.com/mindpilot/chrome-typo3-env-switcher</a></td>
+        </tr>
+      </table>
+
+      <h3>Purpose</h3>
+      <p>This Chrome extension is designed for TYPO3 CMS developers and editors to streamline their workflow when
+        working with multiple environments.</p>
+      <p>The project idea poped up when switching between many instances of a TYPO3 project felt more and more anoying. Getting uid of a given url should become easyer when an editor is reporting an issue.</p>
+
+      <h3>Main Features</h3>
+      <ul>
+        <li>Quick environment switching between configurable environments like dev, staging, and production</li>
+        <li>TYPO3 page UID detection and display</li>
+        <li>Direct links to TYPO3 backend modules</li>
+        <li>Project-based configuration</li>
+      </ul>
+
+      <h3>Disclaimer</h3>
+      <p>This extension is provided "as is" without warranty of any kind. Use at your own risk. The developers are not
+        responsible for any issues that may arise from using this extension.</p>
+
+      <h3>Privacy</h3>
+      <p>This extension does not collect or transmit any personal data. All settings are stored locally in your
+        browser's sync storage.</p>
+
+      <h3>Credits</h3>
+      <p>I got inspired by "<a href="https://github.com/i-kiu/browser-typo3-pageid" target="_blank">Typo3 Page ID</a>" from I-kiu and "<a href="https://wolostudio.free.nf/handyswitcher/" target="_blank">TYPO3 - BE/FE/Env Handy Switcher</a>" build by Adam Wolski aka wolo. Both gave me a jumpstart, to tinker my own thing.
+      </p>
+
+      <table>
+        <tr>
+          <th>Icons</th>
+          <td><a href="https://lucide.dev/" target="_blank">Lucide Icons</a </td>
+        </tr>
+        <tr>
+          <th>Fonts</th>
+          <td>
+            <a href="https://fonts.google.com/specimen/IBM+Plex+Mono" target="_blank">IBM Plex Mono</a><br/>
+            <a href="https://typo3.com/typo3-cms/the-brand/brand-guidelines" target="_blank">Share (TYPO3)</a><br/>
+          </td>
+        </tr>
+        <tr>
+          <th>TYPO3 Logo</th>
+          <td>The TYPO3 Association is owner of the TYPO3 trademark.</td>
+        </tr>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script src="settings.js"></script>
+</body>
+</html>

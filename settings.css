@@ -1,0 +1,632 @@
+/* ===========================
+   CSS Variables
+   =========================== */
+:root {
+    /* Text */
+    --color-text: #000;
+    --color-text-secondary: #333;
+    --color-text-inverse: #fff;
+    --color-text-muted: #a6a6a6;
+    --color-link: #3962c2;
+
+    /* Backgrounds */
+    --color-bg: #fff;
+    --color-bg-primary: #000000;
+    --color-bg-secondary: #f0f0f0;
+    --color-bg-hover: #e0e0e0;
+    --color-bg-nav: #f5f5f5;
+    --color-bg-nav-hover: #e8e8e8;
+    --color-bg-header: #333;
+    --color-bg-header-hover: #555;
+    --color-bg-code: #e6e6e6;
+    --color-bg-ghost: #fff;
+    --color-bg-dragging: #f5f5f5;
+    --color-bg-input: #fff;
+
+    /* Borders */
+    --color-border: #ccc;
+    --color-border-nav: #ddd;
+    --color-border-active: #333;
+
+    /* Status colors */
+    --color-success-bg: #d4edda;
+    --color-success-border: #c3e6cb;
+    --color-success-text: #155724;
+    --color-error-bg: #f8d7da;
+    --color-error-border: #f5c6cb;
+    --color-error-text: #721c24;
+    --color-warning-bg: #fff3cd;
+    --color-warning-border: #ffeeba;
+    --color-destructive: #d66565;
+    --color-destructive-hover: #803c3c;
+
+    /* Drag & misc */
+    --color-drag-handle: #999;
+    --color-drag-handle-hover: #333;
+    --color-drop-indicator: #000;
+
+    /* Font sizes */
+    --font-size-header: 22px;
+    --font-size-subheader: 20px;
+    --font-size-title: 18px;
+    --font-size-body: 15px;
+
+    /* Icons */
+    --color-icon: #000;
+}
+
+/* Inline SVG icon base (mask technique for theme color control) */
+.icon {
+    display: inline-block;
+    background-color: var(--color-icon);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+/* Grip vertical icon (drag handle) */
+.icon-grip {
+    width: 16px;
+    height: 16px;
+    -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='12' r='1'/><circle cx='9' cy='5' r='1'/><circle cx='9' cy='19' r='1'/><circle cx='15' cy='12' r='1'/><circle cx='15' cy='5' r='1'/><circle cx='15' cy='19' r='1'/></svg>");
+    mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='12' r='1'/><circle cx='9' cy='5' r='1'/><circle cx='9' cy='19' r='1'/><circle cx='15' cy='12' r='1'/><circle cx='15' cy='5' r='1'/><circle cx='15' cy='19' r='1'/></svg>");
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: var(--font-size-body);
+    line-height: 1.2rem;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+}
+
+.hidden {
+    display: none;
+}
+.muted {
+    color: var(--color-text-muted);
+}
+
+    /* Header */
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-bg-header);
+    color: var(--color-text-inverse);
+    padding: 15px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.settings-header h1 {
+    margin: 0;
+    font-size: var(--font-size-header);
+    font-weight: normal;
+    display: flex;
+    gap: 8px;
+}
+
+.close-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--color-text-inverse);
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn img {
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) invert(1);
+}
+
+.close-btn:hover {
+    background-color: var(--color-bg-header-hover);
+    border-color: #888;
+}
+
+/* Layout */
+.settings-layout {
+    display: flex;
+    flex: 1;
+    min-height: calc(100vh - 60px);
+}
+
+/* Navigation */
+.settings-nav {
+    width: 180px;
+    background-color: var(--color-bg-nav);
+    border-right: 1px solid var(--color-border-nav);
+    flex-shrink: 0;
+}
+
+.settings-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    line-height: 1.8;
+}
+
+.settings-nav li {
+    border-bottom: 1px solid var(--color-border-nav);
+}
+
+.settings-nav .nav-link {
+    display: block;
+    padding: 15px 20px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.settings-nav .nav-link:hover {
+    background-color: var(--color-bg-nav-hover);
+}
+
+.settings-nav .nav-link.active {
+    background-color: var(--color-bg);
+    border-right: 3px solid var(--color-border-active);
+    font-weight: bold;
+}
+
+/* Content Area */
+.settings-content {
+    flex: 1;
+    padding: 20px 30px;
+    max-width: 800px;
+    overflow-y: auto;
+}
+
+.content-section {
+    display: none;
+}
+
+.content-section.active {
+    display: block;
+}
+
+/* Typography */
+h2 {
+    font-size: var(--font-size-subheader);
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+h3 {
+    font-size: var(--font-size-title);
+    margin-top: 15px;
+    margin-bottom: 8px;
+}
+
+p {
+    line-height: 1.3;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+ul, ol {
+    margin-bottom: 20px;
+}
+ol {
+    padding-left: 15px;
+}
+
+a {
+    color: var(--color-link);
+}
+
+.icon-inline {
+    width: 21px;
+    height: 21px;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.warning-box {
+    background-color: var(--color-warning-bg);
+    border: 1px solid var(--color-warning-border);
+    padding: 10px 15px;
+}
+
+.warning-box p {
+    margin: 0;
+}
+
+.warning-box ul {
+    margin: 0;
+    padding-left: 15px;
+}
+
+/* Toggle Setting */
+.toggle-setting {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.toggle-setting label {
+    font-weight: normal;
+    font-size: var(--font-size-body);
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-btn img {
+    width: 36px;
+}
+
+/* Project Details */
+#project-detailswrap {
+    border: solid 1px var(--color-border);
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+#project-details {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+#project-details label {
+    font-size: var(--font-size-title);
+    font-weight: bold;
+}
+
+.button-container {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    gap: 8px;
+    display: flex;
+}
+
+button {
+    margin-right: 5px;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+button img,
+button svg {
+    width: 16px;
+    height: 16px;
+}
+
+button:hover {
+    background-color: var(--color-bg-hover);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.project-selector {
+    margin-top: 1em;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.project-selector label {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.project-selector select {
+    padding: 5px 10px;
+    font-size: var(--font-size-body);
+}
+
+input.project-title {
+    font-weight: bold;
+    padding: 5px;
+    font-size: var(--font-size-title);
+}
+
+.project-type-labelxxxxxxxxxxx {
+    padding: 5px 10px;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+input[type="color"] {
+    width: 50px;
+    height: 35px;
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+}
+
+input.color-hex {
+    width: 80px;
+    padding: 5px;
+    font-family: monospace;
+}
+
+.environments-list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.environments-list.is-dragging {
+    user-select: none;
+}
+
+.environments-list.is-dragging * {
+    user-select: none;
+}
+
+.environment {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.environment.new {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--color-border);
+}
+
+.environment input {
+    padding: 8px;
+    font-size: 16px;
+    background-color: var(--color-bg-input);
+    border: solid 1px #cccccc;
+}
+
+input.name {
+    flex: 1;
+    min-width: 80px;
+}
+
+input.domain {
+    flex: 2;
+    min-width: 150px;
+}
+
+input.tld {
+    width: 60px;
+}
+
+input.color {
+    width: 50px;
+    height: 35px;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.destructive {
+    background-color: var(--color-destructive);
+    color: var(--color-text-inverse);
+    border: none;
+}
+
+button.destructive:hover {
+    background-color: var(--color-destructive-hover);
+}
+
+/* Drag handle */
+.drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    min-width: 20px;
+    height: 35px;
+    cursor: grab;
+    color: var(--color-drag-handle);
+    transition: color 0.2s;
+}
+
+.drag-handle:hover {
+    color: var(--color-drag-handle-hover);
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-handle .icon {
+    background-color: var(--color-drag-handle);
+    pointer-events: none;
+}
+
+.drag-handle:hover .icon {
+    background-color: var(--color-drag-handle-hover);
+}
+
+/* Ghost element during drag */
+.environment-ghost {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0.8;
+    background-color: var(--color-bg-ghost);
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 4px 8px;
+}
+
+/* Original row while dragging */
+.environment.is-dragging {
+    opacity: 0.3;
+    background-color: var(--color-bg-dragging);
+    border: 1px dashed var(--color-border);
+    border-radius: 3px;
+}
+
+/* Drop indicator line */
+.drop-indicator {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-drop-indicator);
+    pointer-events: none;
+    z-index: 999;
+}
+
+.drop-indicator::before,
+.drop-indicator::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-drop-indicator);
+    border-radius: 50%;
+}
+
+.drop-indicator::before {
+    left: -4px;
+}
+
+.drop-indicator::after {
+    right: -4px;
+}
+
+.import-export-section {
+    margin-top: 10px;
+    border-top: 2px solid var(--color-border);
+}
+
+.message {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.message.success {
+    background-color: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
+    color: var(--color-success-text);
+}
+
+.message.error {
+    background-color: var(--color-error-bg);
+    border: 1px solid var(--color-error-border);
+    color: var(--color-error-text);
+}
+
+code {
+    padding: 1px 3px;
+    background-color: var(--color-bg-code);
+}
+
+pre {
+    padding: 10px;
+    font-family: monospace;
+    background-color: var(--color-bg-code);
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    text-align: left;
+    line-height: normal;
+    margin-bottom: 24px;
+}
+
+th, td {
+    padding-right: 16px;
+    vertical-align: top;
+    line-height: normal;
+}
+
+td {
+    padding-bottom: 8px;
+}
+
+/* ===========================
+   Dark Mode
+   =========================== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-text: #e0e0e0;
+        --color-text-secondary: #ccc;
+        --color-text-inverse: #fff;
+        --color-link: #c88f46;
+
+        --color-bg: #1e1e1e;
+        --color-bg-primary: var(--color-link);
+        --color-bg-secondary: #2d2d2d;
+        --color-bg-hover: #3a3a3a;
+        --color-bg-nav: #252525;
+        --color-bg-nav-hover: #333;
+        --color-bg-header: #111;
+        --color-bg-header-hover: #333;
+        --color-bg-code: #2d2d2d;
+        --color-bg-ghost: #2d2d2d;
+        --color-bg-dragging: #252525;
+        --color-bg-input: #dadada;
+
+        --color-border: #555;
+        --color-border-nav: #444;
+        --color-border-active: #e0e0e0;
+
+        --color-success-bg: #1a3a1a;
+        --color-success-border: #2a5a2a;
+        --color-success-text: #8fdf8f;
+        --color-error-bg: #3a1a1a;
+        --color-error-border: #5a2a2a;
+        --color-error-text: #f08080;
+        --color-warning-bg: #3a3520;
+        --color-warning-border: #5a5030;
+        --color-destructive: #cc3333;
+        --color-destructive-hover: #aa0000;
+
+        --color-drag-handle: #777;
+        --color-drag-handle-hover: #ccc;
+        --color-drop-indicator: #e0e0e0;
+
+        --color-icon: #e0e0e0;
+    }
+}
