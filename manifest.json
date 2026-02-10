@@ -3,7 +3,7 @@
   "name": "TYPO3 ENV Switcher",
   "version": "1.0",
   "author": "Andy Meier",
-  "description": "Quickly switch to different instances of a TYPO3 site and get the uid of the current page.\n\n",
+  "description": "Quickly switch to different instances of a TYPO3 site and get the uid of the current page.",
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",
@@ -17,9 +17,7 @@
     "tabs"
   ],
   "host_permissions": [
-    "<all_urls>",
-    "https://*/*",
-    "http://*/*"
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "service-worker.js"
