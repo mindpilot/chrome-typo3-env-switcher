@@ -31,6 +31,8 @@ function extractAndSendUid() {
     }
   }
 
+  if (!chrome.runtime?.id) return; // Extension context invalidated (e.g. after reload)
+
   if (uid) {
     chrome.runtime.sendMessage({ type: "SET_UID", uid: uid });
   } else {
@@ -51,7 +53,7 @@ function overlayColorBadge() {
     return;
   }
 
-  // Requesting color badge info...;
+  if (!chrome.runtime?.id) return;
   chrome.runtime.sendMessage({ type: "GET_COLOR_BADGE_INFO" }, (response) => {
     if (chrome.runtime.lastError) {
       // Error getting color badge info;
@@ -95,6 +97,7 @@ function createColorBadge(color) {
 
 // Listen for storage changes to update badge in real-time
 chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (!chrome.runtime?.id) return;
   if (areaName === 'sync' && changes.showColorBadge) {
     const existingBadge = document.getElementById('env-switcher-color-badge');
     if (changes.showColorBadge.newValue === false && existingBadge) {
