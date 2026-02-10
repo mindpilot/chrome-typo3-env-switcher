@@ -438,6 +438,13 @@ input.color-hex {
 #message {
     line-height: 1.3em;
 }
+#message-backend {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
 
 /* ===========================
    10. Footer

@@ -197,7 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isBackend) {
         message.classList.remove('hidden');
         const pageTitle = document.getElementById('page-title');
-        pageTitle.style.fontWeight = 100;
         footer.classList.add('hidden');
         beLink.classList.add('hidden');
         return;
@@ -447,6 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Check if in TYPO3 backend
       if (url.href.includes("/typo3/module/")) {
+        const messageBackend = document.getElementById('message-backend');
         let uid = null;
         if (url.pathname.includes("/typo3/module/web/layout") || url.pathname.includes("/typo3/module/web/list")) {
           uid = url.searchParams.get('id');
@@ -457,9 +457,31 @@ document.addEventListener("DOMContentLoaded", () => {
           lastKnownTab = tab;
           updateLinks(uid, url, tab);
           setPopupState('details');
-          pageTitle.innerText = `${tab.title}`;
           setButtonContent('Page-UID ' + uid);
           copyButton.classList.remove('hidden');
+
+          // set page title and add copy url button
+          const tabTitleArray = tab.title.split(/\s*[·•‧⋅|–—]\s*/);
+          pageTitle.innerText = tabTitleArray.length > 2
+            ? `${tabTitleArray[1]}`
+            : tabTitleArray.length > 1
+              ? tabTitleArray[0]
+              : tab.title;
+          messageBackend.textContent = '';
+          const urlText = document.createElement('span');
+          urlText.textContent = url.href;
+          const clipIcon = document.createElement('span');
+          clipIcon.className = 'icon icon-clipboard';
+          messageBackend.append(urlText, clipIcon);
+          messageBackend.classList.remove('hidden');
+          messageBackend.style.cursor = 'pointer';
+          messageBackend.onclick = () => {
+            navigator.clipboard.writeText(url.href).then(() => {
+              urlText.textContent = 'URL copied!';
+              setTimeout(() => { urlText.textContent = url.href; }, 1000);
+            });
+          };
+
         } else {
           setPopupState('message');
           message.innerText = 'No links available in this backend module';
