@@ -29,7 +29,7 @@ browser's sync storage.
 
 #### Credits
 
-I got inspired by [Typo3 Page ID](https://github.com/i-kiu/browser-typo3-pageid) and [YPO3 - BE/FE/Env Handy Switcher](https://wolostudio.free.nf/handyswitcher). Both gave me a jumpstart, to tinker my own thing together.
+I got inspired by [TYPO3 PID Helper](https://chromewebstore.google.com/detail/typo3-pid-helper/epgcolbkhdbpplgndgmbcdnepgdophob) and [YPO3 - BE/FE/Env Handy Switcher](https://chromewebstore.google.com/detail/typo3-befeenv-handy-switc/ohemimdlihjdeacgbccdkafckackmcmn). Both gave me a jumpstart, to tinker my own thing together.
 
 |asset|source|
 |---|---|
