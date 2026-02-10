@@ -368,18 +368,22 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderProjectDetails(projectIndex) {
     const projectDetails = document.getElementById('project-details');
     const environmentsEditContainer = document.getElementById('environments-edit-container');
-    projectDetails.innerHTML = "";
+    const projectDetailsWrap = document.getElementById('project-detailswrap');
+    projectDetails.textContent = "";
 
     let project = null;
 
     if (settingsJson.projects != null && settingsJson.projects[projectIndex]) {
       project = settingsJson.projects[projectIndex];
-    } else {
-      //project = addProject();
-      //projectIndex = 0;
     }
 
     renderProjectsDropdown(projectIndex);
+
+    if (!project) {
+      projectDetailsWrap.style.display = 'none';
+      return;
+    }
+    projectDetailsWrap.style.display = '';
 
     const titleLabel = document.createElement('label');
     titleLabel.textContent = 'Project';
@@ -413,6 +417,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function addEnvironment() {
     const projectIndex = projectSelect.value;
+
+    if (!settingsJson.projects || !settingsJson.projects[projectIndex]) {
+      return;
+    }
 
     const newEnvironment = {
       name: inputNewName.value,
@@ -496,7 +504,7 @@ document.addEventListener("DOMContentLoaded", () => {
   inputNewTld.addEventListener('input', watchNewInputFields);
   inputNewTld.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
-      addEnvironmentButton.click();
+      addEnvironment();
       inputNewName.focus();
     }
   });
