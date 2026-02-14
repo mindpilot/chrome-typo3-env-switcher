@@ -16,6 +16,7 @@
     --color-bg-card-pinned: #ccc;
     --color-bg-infobox: lightyellow;
     --color-bg-tooltip: #222;
+    --color-text-primary: #000000;
 
     /* Borders */
     --color-border: #ccc;
@@ -431,7 +432,7 @@ input.color-hex {
     padding: 10px 10px;
     margin-top: 5px;
     margin-bottom: 5px;
-    border: solid 1px var(--color-border-infobox);
+    border-left: solid 2px var(--color-border-infobox);
     background-color: var(--color-bg-infobox);
 }
 
@@ -450,17 +451,19 @@ input.color-hex {
     flex-shrink: 0;
 }
 
-a.backend-env-link {
+#environments a.backend-env-link {
     font-size: var(--font-size-small);
     text-decoration: none;
     text-align: center;
     cursor: pointer;
     padding: 4px 12px;
     width: 100%;
+    color: var(--color-text-primary);
     background-color: #cccccc;
 }
-a.backend-env-link:hover {
-    background-color: #bbbbbb;;
+#environments a.backend-env-link:hover {
+    background-color: #000000;
+    color: var(--color-text-inverse);
 }
 
 .backend-env-link:hover {
