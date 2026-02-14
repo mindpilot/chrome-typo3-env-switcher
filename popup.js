@@ -473,13 +473,16 @@ document.addEventListener("DOMContentLoaded", () => {
           backendLinkContainer.textContent = '';
           const urlText = document.createElement('span');
           urlText.textContent = url.href;
+          urlText.setAttribute('title', 'Copy URL to clipboard');
 
           const keyboardHint = document.getElementsByClassName('keyboard-hint')[0];
           if (keyboardHint) {
-            keyboardHint.innerText = 'Open backend in other environments';
+            keyboardHint.innerText = 'Open backend URL in other environments';
           }
 
-          backendLinkContainer.append(urlText)
+          const clipIcon = document.createElement('span');
+          clipIcon.className = 'icon icon-clipboard';
+          backendLinkContainer.append(clipIcon, urlText);
           backendLinkContainer.classList.remove('hidden');
           backendLinkContainer.style.cursor = 'pointer';
           backendLinkContainer.onclick = () => {
