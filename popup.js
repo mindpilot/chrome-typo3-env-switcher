@@ -273,15 +273,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       currentEnvColumn.appendChild(listLink);
     } else {
-      // Note: uses trusted browser API values only
-      message.innerHTML = 'No UID found - <a href="#" id="reload-page-link">reload the page</a>';
+      message.textContent = '';
+      message.append('No UID found - ');
+      const retryLink = document.createElement('a');
+      retryLink.href = '#';
+      retryLink.textContent = 'retry';
+      retryLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        fetchAndUpdateUid();
+      });
+      message.appendChild(retryLink);
       message.classList.remove('hidden');
       copyButton.classList.add('hidden');
-      document.getElementById('reload-page-link').addEventListener('click', (e) => {
-        e.preventDefault();
-        chrome.tabs.reload();
-        window.close();
-      });
     }
 
     // Build array of environment cards (excluding current)
@@ -446,7 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Check if in TYPO3 backend
       if (url.href.includes("/typo3/module/")) {
-        const messageBackend = document.getElementById('message-backend');
+        const backendLinkContainer = document.getElementById('backend-link');
         let uid = null;
         if (url.pathname.includes("/typo3/module/web/layout") || url.pathname.includes("/typo3/module/web/list")) {
           uid = url.searchParams.get('id');
@@ -467,20 +470,59 @@ document.addEventListener("DOMContentLoaded", () => {
             : tabTitleArray.length > 1
               ? tabTitleArray[0]
               : tab.title;
-          messageBackend.textContent = '';
+          backendLinkContainer.textContent = '';
           const urlText = document.createElement('span');
           urlText.textContent = url.href;
-          const clipIcon = document.createElement('span');
-          clipIcon.className = 'icon icon-clipboard';
-          messageBackend.append(urlText, clipIcon);
-          messageBackend.classList.remove('hidden');
-          messageBackend.style.cursor = 'pointer';
-          messageBackend.onclick = () => {
+
+          const keyboardHint = document.getElementsByClassName('keyboard-hint')[0];
+          if (keyboardHint) {
+            keyboardHint.innerText = 'Open backend in other environments';
+          }
+
+          backendLinkContainer.append(urlText)
+          backendLinkContainer.classList.remove('hidden');
+          backendLinkContainer.style.cursor = 'pointer';
+          backendLinkContainer.onclick = () => {
             navigator.clipboard.writeText(url.href).then(() => {
               urlText.textContent = 'URL copied!';
               setTimeout(() => { urlText.textContent = url.href; }, 1000);
             });
           };
+
+          // Add backend links for other environments
+          const detectedProject = detectProject(url);
+          if (detectedProject) {
+            const environments = settingsJson.projects[detectedProject.id].environments;
+            const backendEnvContainer = document.getElementById('environments');
+
+            const footer = document.querySelector('.popup-footer');
+            footer.classList.remove('hidden');
+
+            backendEnvContainer.textContent = '';
+            let hasOtherEnvs = false;
+
+            for (let envIndex = 0; envIndex < environments.length; envIndex++) {
+              if (envIndex === detectedProject.environmentIndex) continue;
+              const env = environments[envIndex];
+              const envDomain = `${env.domain}.${env.tld}`;
+              const envUrl = url.href.replace(url.hostname, envDomain);
+
+              const link = document.createElement('a');
+              link.className = 'backend-env-link';
+              link.href = envUrl;
+              link.textContent = `${env.name}`;
+              link.title = `Open on ${env.name}`;
+              link.addEventListener('click', (event) => {
+                openUrlInTabOrCreate(link.href, event);
+              });
+              backendEnvContainer.appendChild(link);
+              hasOtherEnvs = true;
+            }
+
+            if (hasOtherEnvs) {
+              backendEnvContainer.classList.remove('hidden');
+            }
+          }
 
         } else {
           setPopupState('message');
@@ -493,9 +535,22 @@ document.addEventListener("DOMContentLoaded", () => {
         return false;
       }
 
-      chrome.runtime.sendMessage({ type: "GET_UID" }, (response) => {
-        // Popup received UID: response.uid
-        const uid = response.uid;
+      // Extract UID directly from the page DOM (fresh read, not cached)
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => {
+          let uid = document.body.getAttribute("data-uid");
+          if (!uid) uid = document.head.getAttribute("data-uid");
+          if (!uid) uid = document.querySelector("meta[name=pageid]")?.getAttribute("content");
+          return uid;
+        }
+      }, (results) => {
+        const uid = results?.[0]?.result || null;
+
+        // Keep service worker in sync
+        if (uid) {
+          chrome.runtime.sendMessage({ type: "SET_UID", uid });
+        }
 
         // Store values for re-rendering on pin toggle
         lastKnownUid = uid;

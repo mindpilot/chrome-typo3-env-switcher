@@ -438,12 +438,34 @@ input.color-hex {
 #message {
     line-height: 1.3em;
 }
-#message-backend {
+#backend-link {
     margin-top: 8px;
+    margin-bottom: 8px;
     display: flex;
-    align-items: center;
     gap: 6px;
     cursor: pointer;
+}
+
+#backend-link .icon {
+    flex-shrink: 0;
+}
+
+a.backend-env-link {
+    font-size: var(--font-size-small);
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    padding: 4px 12px;
+    width: 100%;
+    background-color: #cccccc;
+}
+a.backend-env-link:hover {
+    background-color: #bbbbbb;;
+}
+
+.backend-env-link:hover {
+    color: var(--color-text);
+    text-decoration: underline;
 }
 
 /* ===========================
