@@ -47,7 +47,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             "name": "Project 1",
             "color": "#ffffff",
             "environments": [
-              {"name": "ddev", "domain": "", "tld": "test", "color": ""},
             ]
           }
         ]
