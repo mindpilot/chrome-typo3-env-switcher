@@ -78,9 +78,19 @@ const Permissions = {
 
   /**
    * Unregister all dynamic content scripts, then re-register for
-   * currently granted host origins.
+   * currently granted host origins.  Serialized so concurrent callers
+   * (e.g. onAdded + SYNC_CONTENT_SCRIPTS message) don't race.
    */
-  async syncContentScripts() {
+  _syncChain: Promise.resolve(),
+
+  syncContentScripts() {
+    this._syncChain = this._syncChain
+      .then(() => this._doSyncContentScripts())
+      .catch(() => {});
+    return this._syncChain;
+  },
+
+  async _doSyncContentScripts() {
     // Unregister existing dynamic scripts
     try {
       const existing = await chrome.scripting.getRegisteredContentScripts();

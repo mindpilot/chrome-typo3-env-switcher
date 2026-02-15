@@ -23,7 +23,7 @@
     <!-- Projects Section -->
     <section id="section-projects" class="content-section active">
       <div class="project-selector">
-        <label for="project-select">Projects Settings</label>
+        <label for="project-select">Project Settings</label>
         <select id="project-select"></select>
       </div>
 
@@ -43,21 +43,19 @@
         <div id="environments-edit-container">
           <!-- Environments will be rendered here -->
         </div>
-        <div class="muted">Choose a short name. White badges are transparent.</div>
 
         <div class="environment new">
           <input type="text" id="new-env-name" class="name" placeholder="Short name">
           <input type="text" id="new-env-domain" class="domain" placeholder="(sub.)domain">
           <input type="text" id="new-env-tld" class="tld" placeholder="tld">
-          <button id="add-environment" title="Add new environment" disabled>+</button>
+          <button id="add-environment" class="add-btn" title="Add new environment" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
         </div>
-        <div class="button-container">
-          <button id="remove-project" class="destructive">Remove this project</button>
-        </div>
+        <div class="muted">Choose a short name. White badges are transparent.</div>
       </div>
 
       <div class="button-container">
-        <button id="add-project"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add Project</button>
+          <button id="remove-project" class="destructive">Remove this project</button>
+          <button id="add-project" class="add-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add Project</button>
       </div>
 
         <div class="permission-section">
@@ -79,7 +77,6 @@
     <!-- Help Section -->
     <section id="section-help" class="content-section">
       <h1>Help</h1>
-      <h2>Using the Extension</h2>
       <img src="docs/popup-switcher.png" alt="Screenshot of the popup" style="max-width: 100%; border: 1px solid #bfbfbf; margin-bottom: 16px;">
       <table>
         <tr>
@@ -104,10 +101,19 @@
         <li>Click "Add Project" to create a new project under <a href="#" class="nav-link" data-section="projects">Projects</a></li>
         <li>Give your project a short descriptive label</li>
         <li>Add environments by filling in the name (keep it short), domain, and TLD fields</li>
-        <li>Click the "+" button to add each environment</li>
+        <li>Click the "+" button or hit <kbd>enter</kbd> in the "tld" field to add a new environment</li>
       </ol>
 
-      <p>Use the import/export feature to backup and share your settings with team mates as json file.</p>
+        <h2>Environments</h2>
+        <img src="docs/environments.png" alt="environments setting" style="max-width: 100%; border: 1px solid #bfbfbf; margin-bottom: 16px;">
+
+        <h2>Host Permissions</h2>
+        <p>Inserting color badges requires individual host permissions, for which the user is asked when adding a new environment domain.</p>
+        <img src="docs/permissions.png" alt="granted permissions" style="max-width: 100%; border: 1px solid #bfbfbf; margin-bottom: 16px;">
+        <img src="docs/host-permission-dialog.png" alt="permissions dialog" style="max-width: 100%; border: 1px solid #bfbfbf; margin-bottom: 16px;">
+
+        <h2>Import/Export</h2>
+        <p>Use the import/export feature to backup and share your settings with teammates as JSON file.</p>
 
       <h2 id="typo3-setup">TYPO3 Setup</h2>
       <div class="warning-box">
@@ -119,7 +125,7 @@
       </div>
       <h4>Add one of the following settings to your TypoScript PAGE object.</h4>
 
-      <p>add <code>data-uid="1"</code> to the body tag of our template: <code>&lt;body data-uid="1"&gt;</code></p>
+      <p>Add <code>data-uid="1"</code> to the body tag of your template: <code>&lt;body data-uid="1"&gt;</code></p>
       <pre>
 page = PAGE
 page {
@@ -150,7 +156,7 @@ page.meta {
 
     <!-- About Section -->
     <section id="section-about" class="content-section">
-      <h1>About </h1>
+      <h1>About</h1>
 
       <table>
         <tr>
@@ -174,7 +180,7 @@ page.meta {
       <h3>Purpose</h3>
       <p>This Chrome extension is designed for TYPO3 CMS developers and editors to streamline their workflow when
         working with multiple environments.</p>
-      <p>The project idea popped-up when switching between many instances of a TYPO3 project felt more and more anoying. Also getting the uid of a given url should become easyer, for the editor when reporting an issue.</p>
+      <p>The project idea popped up when switching between many instances of a TYPO3 project felt more and more annoying. Also getting the UID of a given URL should become easier, for the editor when reporting an issue.</p>
 
       <h3>Main Features</h3>
       <ul>

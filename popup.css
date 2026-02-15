@@ -56,10 +56,6 @@ body {
     display: none !important;
 }
 
-.strong {
-    font-weight: bold;
-}
-
 /* Inline SVG icon base (mask technique for theme color control) */
 .icon {
     display: inline-block;
@@ -134,16 +130,6 @@ p#page-title {
    4. Details & Project
    =========================== */
 #details-container {
-    margin-top: 10px;
-}
-
-#details {
-    margin-bottom: 10px;
-}
-
-#project-settings {
-    border-top: dashed 1px var(--color-border);
-    padding-top: 8px;
     margin-top: 10px;
 }
 
@@ -345,18 +331,6 @@ a:link {
     margin-bottom: 5px;
 }
 
-.logo {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
-    /* fix */
-    background-image: url('logo.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-}
-
 /* ===========================
    8. Form Inputs
    =========================== */
@@ -378,10 +352,6 @@ a:link {
 
 input.project-title {
     font-weight: bold;
-}
-
-.project-type {
-    padding: 0 4px;
 }
 
 .environments-list {
@@ -419,10 +389,6 @@ input.color {
 input.tld {
     min-width: 10px;
     max-width: 30px;
-}
-
-input.color-hex {
-    max-width: 55px;
 }
 
 /* ===========================

@@ -8,6 +8,7 @@
     --color-text-inverse: #fff;
     --color-text-muted: #a6a6a6;
     --color-link: #3962c2;
+    --color-text-input-name: #000000;
 
     /* Backgrounds */
     --color-bg: #fff;
@@ -22,11 +23,13 @@
     --color-bg-ghost: #fff;
     --color-bg-dragging: #f5f5f5;
     --color-bg-input: #fff;
+    --color-bg-input-name: #fafafa;
 
     /* Borders */
     --color-border: #ccc;
     --color-border-nav: #ddd;
     --color-border-active: #333;
+    --color-border-input: #ccc;
 
     /* Status colors */
     --color-success-bg: #d4edda;
@@ -47,12 +50,13 @@
 
     /* Font sizes */
     --font-size-header: 22px;
-    --font-size-subheader: 20px;
+    --font-size-subheader: 18px;
     --font-size-title: 18px;
     --font-size-body: 15px;
 
     /* Icons */
     --color-icon: #000;
+    --icon-permissions: url('icons/shield-check.svg');
 }
 
 /* Inline SVG icon base (mask technique for theme color control) */
@@ -143,6 +147,14 @@ body {
     border-color: #888;
 }
 
+.add-btn {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-inverse);
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
 /* Layout */
 .settings-layout {
     display: flex;
@@ -204,6 +216,10 @@ body {
 }
 
 /* Typography */
+h1 {
+    font-size: var(--font-size-header);
+    margin-top: 0;
+}
 h2 {
     font-size: var(--font-size-subheader);
     margin-top: 30px;
@@ -232,13 +248,6 @@ ol {
 
 a {
     color: var(--color-link);
-}
-
-.icon-inline {
-    width: 21px;
-    height: 21px;
-    vertical-align: middle;
-    margin-right: 4px;
 }
 
 .warning-box {
@@ -287,8 +296,10 @@ a {
 /* Project Details */
 #project-detailswrap {
     border: solid 1px var(--color-border);
-    padding: 15px;
+    border-radius: 3px;
+    padding: 18px;
     margin-bottom: 20px;
+    background-color: var(--color-bg-secondary);
 }
 
 #project-details {
@@ -338,15 +349,14 @@ button:disabled {
 }
 
 .project-selector {
-    margin-top: 1em;
-    margin-bottom: 10px;
+    margin-bottom: 1em;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .project-selector label {
-    font-size: 2em;
+    font-size: var(--font-size-header);
     font-weight: bold;
 }
 
@@ -361,25 +371,11 @@ input.project-title {
     font-size: var(--font-size-title);
 }
 
-.project-type-labelxxxxxxxxxxx {
-    padding: 5px 10px;
-    background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: 3px;
-    font-weight: bold;
-}
-
 input[type="color"] {
     width: 50px;
     height: 35px;
     border: 1px solid var(--color-border);
     cursor: pointer;
-}
-
-input.color-hex {
-    width: 80px;
-    padding: 5px;
-    font-family: monospace;
 }
 
 .environments-list {
@@ -401,11 +397,11 @@ input.color-hex {
 .environment {
     display: flex;
     gap: 8px;
-    align-items: center;
 }
 
 .environment.new {
     margin-top: 15px;
+    margin-bottom: 15px;
     padding-top: 15px;
     border-top: 1px dashed var(--color-border);
 }
@@ -414,17 +410,18 @@ input.color-hex {
     padding: 8px;
     font-size: 16px;
     background-color: var(--color-bg-input);
-    border: solid 1px #cccccc;
+    border: solid 1px var(--color-border-input);
 }
 
 input.name {
     flex: 1;
-    min-width: 80px;
+    min-width: 60px;
+    background-color: var(--color-bg-input-name);
+    color: var(--color-text-input-name);
 }
 
 input.domain {
     flex: 2;
-    min-width: 150px;
 }
 
 input.tld {
@@ -536,7 +533,6 @@ button.destructive:hover {
 
 .import-export-section {
     margin-top: 10px;
-    border-top: 2px solid var(--color-border);
 }
 
 .message {
@@ -565,6 +561,11 @@ button.destructive:hover {
     border-radius: 3px;
     background-color: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
+    padding-left: 60px;
+    background-image: var(--icon-permissions);
+    background-repeat: no-repeat;
+    background-position: 12px 12px;
+    background-size: 40px;
 }
 
 .permissions-status .perm-host {
@@ -630,7 +631,7 @@ td {
         --color-text: #e0e0e0;
         --color-text-secondary: #ccc;
         --color-text-inverse: #fff;
-        --color-link: #c88f46;
+        --color-link: #FF8700;
 
         --color-bg: #1e1e1e;
         --color-bg-primary: var(--color-link);
@@ -643,11 +644,13 @@ td {
         --color-bg-code: #2d2d2d;
         --color-bg-ghost: #2d2d2d;
         --color-bg-dragging: #252525;
-        --color-bg-input: #dadada;
+        --color-bg-input: #ababab;
+        --color-bg-input-name: #505050;
 
         --color-border: #555;
         --color-border-nav: #444;
         --color-border-active: #e0e0e0;
+        --color-border-input: #000000;
 
         --color-success-bg: #1a3a1a;
         --color-success-border: #2a5a2a;
@@ -665,5 +668,7 @@ td {
         --color-drop-indicator: #e0e0e0;
 
         --color-icon: #e0e0e0;
+        --icon-permissions: url('icons/shield-check-dark.svg');
+
     }
 }

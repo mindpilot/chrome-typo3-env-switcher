@@ -49,26 +49,22 @@ function handleDOMContentLoaded() {
 function overlayColorBadge() {
   // Check if badge already exists
   if (document.getElementById('env-switcher-color-badge')) {
-    // Badge already exists');
     return;
   }
 
   if (!chrome.runtime?.id) return;
   chrome.runtime.sendMessage({ type: "GET_COLOR_BADGE_INFO" }, (response) => {
     if (chrome.runtime.lastError) {
-      // Error getting color badge info;
       return;
     }
 
     if (!response || !response.showBadge || !response.color) {
-      //console.log('[EnvSwitcher] Badge not shown - showBadge:', response?.showBadge, 'color:', response?.color);
       return;
     }
 
     const color = response.color.toLowerCase();
     // Don't show badge if color is white
     if (color === '#ffffff' || color === '#fff' || color === 'white') {
-      //  Badge not shown - color is white
       return;
     }
 
@@ -80,18 +76,16 @@ function overlayColorBadge() {
 function createColorBadge(color) {
   const badge = document.createElement('div');
   badge.id = 'env-switcher-color-badge';
-  badge.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 40px 40px 0 0;
-    border-color: ${color} transparent transparent transparent;
-    z-index: 2147483647;
-    pointer-events: none;
-  `;
+  badge.style.position = 'fixed';
+  badge.style.top = '0';
+  badge.style.left = '0';
+  badge.style.width = '0';
+  badge.style.height = '0';
+  badge.style.borderStyle = 'solid';
+  badge.style.borderWidth = '40px 40px 0 0';
+  badge.style.borderColor = color + ' transparent transparent transparent';
+  badge.style.zIndex = '2147483647';
+  badge.style.pointerEvents = 'none';
   document.body.appendChild(badge);
 }
 

@@ -46,7 +46,12 @@ Call the current backend URL in other environments by clicking the environment l
 
 ### ⚙ Settings
 
-![settings page](docs/screenshot-settings-dark.png)
+![settings page](docs/screenshot-settings.png)
+
+Inserting color badges requires individual host permissions, for which the user is asked when adding a new environment domain.
+
+![permission dialog](./docs/host-permission-dialog.png)
+
 
 ## 🛡 Privacy
 
@@ -70,4 +75,4 @@ This project is licensed under [GNU General Public License v3.0](LICENSE).
 
 ## 🙏🏻 Credits
 
-Partly inspired by [TYPO3 PID Helper](https://chromewebstore.google.com/detail/typo3-pid-helper/epgcolbkhdbpplgndgmbcdnepgdophob) and [TYPO3 - BE/FE/Env Handy Switcher](https://chromewebstore.google.com/detail/typo3-befeenv-handy-switc/ohemimdlihjdeacgbccdkafckackmcmn).
+Inspired by [TYPO3 PID Helper](https://chromewebstore.google.com/detail/typo3-pid-helper/epgcolbkhdbpplgndgmbcdnepgdophob) and [TYPO3 - BE/FE/Env Handy Switcher](https://chromewebstore.google.com/detail/typo3-befeenv-handy-switc/ohemimdlihjdeacgbccdkafckackmcmn).

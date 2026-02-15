@@ -9,6 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let settingsJson = null;
   let projectId = 0;
 
+  // Debounced save to avoid exceeding chrome.storage.sync write quota
+  let saveTimeout = null;
+  function debouncedSave(delay = 400) {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => saveSettings(), delay);
+  }
+
   // Drag and drop state
   const dragState = {
     isDragging: false,
@@ -145,23 +152,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     nameInput.addEventListener('input', (e) => {
       settingsJson.projects[projectIndex].environments[index].name = e.target.value;
-      saveSettings();
+      debouncedSave();
     });
 
     domainInput.addEventListener('input', (e) => {
       settingsJson.projects[projectIndex].environments[index].domain = e.target.value;
-      saveSettings();
+      debouncedSave();
     });
     domainInput.addEventListener('blur', () => { if (showColorBadge) syncPermissionsAndScripts(); });
 
     colorInput.addEventListener('input', (e) => {
       settingsJson.projects[projectIndex].environments[index].color = e.target.value;
-      saveSettings();
+      debouncedSave();
     });
 
     tldInput.addEventListener('input', (e) => {
       settingsJson.projects[projectIndex].environments[index].tld = e.target.value;
-      saveSettings();
+      debouncedSave();
     });
     tldInput.addEventListener('blur', () => { if (showColorBadge) syncPermissionsAndScripts(); });
 
@@ -361,12 +368,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    projectSelect.addEventListener('change', () => {
-      projectId = projectSelect.value;
-      settingsJson["selectedProjectIndex"] = projectId;
-      saveSettings();
-      renderProjectDetails(projectSelect.value);
-    });
   }
 
   function renderProjectDetails(projectIndex) {
@@ -401,7 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
     titleInput.value = project.name;
     titleInput.addEventListener('input', (e) => {
       settingsJson.projects[projectIndex].name = e.target.value;
-      saveSettings();
+      debouncedSave();
       renderProjectsDropdown(projectIndex);
     });
     projectDetails.appendChild(titleInput);
@@ -424,6 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function addEnvironment() {
     const projectIndex = projectSelect.value;
+    const addEnvironmentButton = document.getElementById('add-environment');
 
     if (!settingsJson.projects || !settingsJson.projects[projectIndex]) {
       return;
@@ -440,6 +442,8 @@ document.addEventListener("DOMContentLoaded", () => {
       inputNewName.value = '';
       inputNewDomain.value = '';
       inputNewTld.value = '';
+      addEnvironmentButton.classList.add('disabled');
+      addEnvironmentButton.setAttribute('disabled', 'disabled');
       settingsJson.projects[projectIndex].environments.push(newEnvironment);
       saveSettings();
       if (showColorBadge) syncPermissionsAndScripts();
@@ -450,7 +454,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function addProject() {
-      // todo: delete this function if not used
     const nextProjectNumber = projectSelect.options.length;
     const newProject = {
       "name": "New Project " + (nextProjectNumber + 1),
@@ -514,7 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
     container.classList.remove('hidden');
 
     const label = document.createElement('div');
-    label.textContent = 'Host permissions for inserting color badges into pages of:';
+    label.textContent = 'Granted host permissions for inserting color badges into pages of:';
     label.style.marginBottom = '4px';
     container.appendChild(label);
 
@@ -546,10 +549,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function removeProject() {
     const projectOptionsCount = projectSelect.options.length;
     const projectIndex = projectSelect.value;
-    if (projectOptionsCount === 1) {
-      //alert('You cannot remove the last project');
-      //return;
-    }
+    if (projectOptionsCount <= 1) return;
     settingsJson.projects.splice(projectIndex, 1);
     saveSettings();
     if (showColorBadge) syncPermissionsAndScripts();
@@ -583,28 +583,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   addEnvironmentButton.addEventListener('click', addEnvironment);
 
+  projectSelect.addEventListener('change', () => {
+    projectId = projectSelect.value;
+    settingsJson["selectedProjectIndex"] = projectId;
+    saveSettings();
+    renderProjectDetails(projectSelect.value);
+  });
+
   // Import/Export functionality
   function exportSettings() {
-    chrome.storage.sync.get(['settingsJson'], (result) => {
-      const settings = result.settingsJson;
-      if (!settings) {
-        showMessage('No settings to export', 'error');
-        return;
-      }
+    if (!settingsJson) {
+      showMessage('No settings to export', 'error');
+      return;
+    }
 
-      const dataStr = JSON.stringify(settings, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'environment-switcher-settings.json';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+    const dataStr = JSON.stringify(settingsJson, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'environment-switcher-settings.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 
-      showMessage('Settings exported successfully!', 'success');
-    });
+    showMessage('Settings exported successfully!', 'success');
   }
 
   function importSettings() {

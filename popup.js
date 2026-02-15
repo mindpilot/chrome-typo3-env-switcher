@@ -144,7 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Detect which project/environment matches the current URL
   // Returns project object with id, environmentName, and environmentIndex
   function detectProject(url) {
-    // 'detectedProject in popup: url;
     for (let i = 0; i < settingsJson.projects.length; i++) {
       const proj = settingsJson.projects[i];
       for (let envIdx = 0; envIdx < proj.environments.length; envIdx++) {
@@ -160,7 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateLinks(uid, url, tab) {
     const detectedProject = detectProject(url);
-    // detectedProject: detectedProject
 
     const environmentsContainer = document.getElementById('environments');
     while (environmentsContainer.firstChild) environmentsContainer.firstChild.remove();
@@ -178,8 +176,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (detectedProject === undefined) {
       const missingEnvironmentInfo = document.createElement('div');
       missingEnvironmentInfo.className = 'infobox';
-      // Note: url.hostname comes from the browser's URL API (trusted)
-      missingEnvironmentInfo.innerHTML = 'No Project matches <strong>' + url.hostname + '</strong>. Add the domain in <a href="#" id="open-settings-link">Settings</a>.';
+      missingEnvironmentInfo.append(
+        'No Project matches ',
+        Object.assign(document.createElement('strong'), { textContent: url.hostname }),
+        '. Add the domain in '
+      );
+      const settingsLink = document.createElement('a');
+      settingsLink.href = '#';
+      settingsLink.id = 'open-settings-link';
+      settingsLink.textContent = 'Settings';
+      missingEnvironmentInfo.append(settingsLink, '.');
       copyButton.classList.add('hidden');
       environmentsContainer.appendChild(missingEnvironmentInfo);
 
@@ -419,15 +425,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const linkPageModule = document.getElementById(`link-${environment.name}-page-module`);
       const linkListModule = document.getElementById(`link-${environment.name}-list-module`);
-      const LinkSamePage = document.getElementById(`link-${environment.name}-same-page`);
+      const linkSamePage = document.getElementById(`link-${environment.name}-same-page`);
 
-      LinkSamePage.href = url.href.replace(url.hostname, `${environment.domain}.${environment.tld}`);
-      LinkSamePage.innerText = `${environment.domain}.${environment.tld}`;
-      LinkSamePage.title = `Open this page on ${environment.name}`;
+      linkSamePage.href = url.href.replace(url.hostname, `${environment.domain}.${environment.tld}`);
+      linkSamePage.innerText = `${environment.domain}.${environment.tld}`;
+      linkSamePage.title = `Open this page on ${environment.name}`;
 
       // Add click handler with existing tab detection
-      LinkSamePage.addEventListener('click', (event) => {
-        openUrlInTabOrCreate(LinkSamePage.href, event);
+      linkSamePage.addEventListener('click', (event) => {
+        openUrlInTabOrCreate(linkSamePage.href, event);
       });
 
       if (uid != null) {
@@ -456,7 +462,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function fetchAndUpdateUid() {
-    // fetchAndUpdateUid called popup:fetchAndUpdateUid()
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
       const url = new URL(tab.url);
