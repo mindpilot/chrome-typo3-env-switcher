@@ -59,8 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
         projectId = nextProjectNumber;
         settingsJson.selectedProjectIndex = projectId;
 
-        // Save the new project
+        // Save the new project; sync permissions only if badge is on
         saveSettings();
+        if (showColorBadge) syncPermissionsAndScripts();
       } else if (urlProjectId !== null && urlProjectId !== 'new') {
         // Use URL parameter if provided, otherwise use selected project
         projectId = parseInt(urlProjectId);
@@ -138,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
       envDiv.remove();
       settingsJson.projects[projectIndex].environments.splice(index, 1);
       saveSettings();
+      if (showColorBadge) syncPermissionsAndScripts();
       renderProjectDetails(projectId);
     });
 
@@ -150,6 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
       settingsJson.projects[projectIndex].environments[index].domain = e.target.value;
       saveSettings();
     });
+    domainInput.addEventListener('blur', () => { if (showColorBadge) syncPermissionsAndScripts(); });
 
     colorInput.addEventListener('input', (e) => {
       settingsJson.projects[projectIndex].environments[index].color = e.target.value;
@@ -160,6 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
       settingsJson.projects[projectIndex].environments[index].tld = e.target.value;
       saveSettings();
     });
+    tldInput.addEventListener('blur', () => { if (showColorBadge) syncPermissionsAndScripts(); });
 
     return envDiv;
   }
@@ -413,6 +417,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initialize drag and drop for this environments list
     initDragAndDrop(environmentsList, projectIndex);
+
+    // Update permissions status display
+    renderPermissionsStatus();
   }
 
   function addEnvironment() {
@@ -435,6 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
       inputNewTld.value = '';
       settingsJson.projects[projectIndex].environments.push(newEnvironment);
       saveSettings();
+      if (showColorBadge) syncPermissionsAndScripts();
       renderProjectDetails(projectIndex);
     } else {
       alert('Please fill in all fields');
@@ -472,6 +480,69 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Sync host permissions and content scripts after settings changes.
+  // Must be called from user-gesture context (click/blur handlers).
+  async function syncPermissionsAndScripts() {
+    if (!settingsJson) return;
+    await Permissions.syncPermissions(settingsJson);
+    chrome.runtime.sendMessage({ type: 'SYNC_CONTENT_SCRIPTS' });
+    renderPermissionsStatus();
+  }
+
+  // Render which hosts are granted / pending in the permissions status area
+  async function renderPermissionsStatus() {
+    const container = document.getElementById('permissions-status');
+    if (!container || !settingsJson) return;
+
+    // Only show permission status when badge feature is enabled
+    if (!showColorBadge) {
+      container.classList.add('hidden');
+      return;
+    }
+
+    const needed = Permissions.buildOriginPatterns(settingsJson);
+    if (needed.length === 0) {
+      container.classList.add('hidden');
+      return;
+    }
+
+    const current = await chrome.permissions.getAll();
+    const grantedOrigins = current.origins || [];
+
+    // Clear container safely
+    while (container.firstChild) container.firstChild.remove();
+    container.classList.remove('hidden');
+
+    const label = document.createElement('div');
+    label.textContent = 'Host permissions for inserting color badges into pages of:';
+    label.style.marginBottom = '4px';
+    container.appendChild(label);
+
+    let hasPending = false;
+    for (const pattern of needed) {
+      const span = document.createElement('span');
+      span.className = 'perm-host';
+      // Display a readable host from the pattern (strip *:// and /*)
+      span.textContent = pattern.replace('*://', '').replace('/*', '');
+      if (grantedOrigins.includes(pattern)) {
+        span.classList.add('perm-granted');
+      } else {
+        span.classList.add('perm-pending');
+        hasPending = true;
+      }
+      container.appendChild(span);
+    }
+
+    if (hasPending) {
+      const grantBtn = document.createElement('button');
+      grantBtn.textContent = 'Grant Permissions';
+      grantBtn.addEventListener('click', async () => {
+        await syncPermissionsAndScripts();
+      });
+      container.appendChild(grantBtn);
+    }
+  }
+
   function removeProject() {
     const projectOptionsCount = projectSelect.options.length;
     const projectIndex = projectSelect.value;
@@ -481,6 +552,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     settingsJson.projects.splice(projectIndex, 1);
     saveSettings();
+    if (showColorBadge) syncPermissionsAndScripts();
     renderProjectsDropdown(0);
     renderProjectDetails(0);
   }
@@ -555,9 +627,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Save to storage
-        chrome.storage.sync.set({ settingsJson: importedSettings }, () => {
+        chrome.storage.sync.set({ settingsJson: importedSettings }, async () => {
           settingsJson = importedSettings;
           projectId = importedSettings.selectedProjectIndex ?? 0;
+          if (showColorBadge) await syncPermissionsAndScripts();
           renderProjectDetails(projectId);
           showMessage('Settings imported successfully!', 'success');
         });
@@ -641,12 +714,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  colorBadgeToggle.addEventListener('click', () => {
-    showColorBadge = !showColorBadge;
-    chrome.storage.sync.set({ showColorBadge }, () => {
-      // update setting
+  colorBadgeToggle.addEventListener('click', async () => {
+    const newValue = !showColorBadge;
+
+    if (newValue) {
+      // Turning ON: request permissions for all configured domains
+      showColorBadge = true;
+      chrome.storage.sync.set({ showColorBadge: true });
       updateToggleIcon();
-    });
+
+      const result = await Permissions.syncPermissions(settingsJson);
+      chrome.runtime.sendMessage({ type: 'SYNC_CONTENT_SCRIPTS' });
+
+      if (result.failed.length > 0 && result.granted.length === 0) {
+        // User denied — revert toggle
+        showColorBadge = false;
+        chrome.storage.sync.set({ showColorBadge: false });
+        updateToggleIcon();
+      }
+      renderPermissionsStatus();
+    } else {
+      // Turning OFF: revoke all host permissions, unregister content scripts
+      showColorBadge = false;
+      chrome.storage.sync.set({ showColorBadge: false });
+      updateToggleIcon();
+
+      await Permissions.revokeAllHostPermissions();
+      chrome.runtime.sendMessage({ type: 'SYNC_CONTENT_SCRIPTS' });
+      renderPermissionsStatus();
+    }
   });
 
 });

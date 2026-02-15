@@ -52,6 +52,21 @@ document.addEventListener("DOMContentLoaded", () => {
     keyboardHint.innerText = 'Hold "Alt" key to open links in the current tab';
   }
 
+  // Helper: open or focus an existing settings tab (avoids duplicates)
+  function openOrFocusSettings(params = '') {
+    const baseUrl = chrome.runtime.getURL('settings.html');
+    const targetUrl = baseUrl + (params ? '?' + params : '');
+    chrome.tabs.query({}, (tabs) => {
+      const existing = tabs.find(t => t.url && t.url.startsWith(baseUrl));
+      if (existing) {
+        chrome.tabs.update(existing.id, { active: true, url: targetUrl });
+        chrome.windows.update(existing.windowId, { focused: true });
+      } else {
+        chrome.tabs.create({ url: targetUrl });
+      }
+    });
+  }
+
   // Helper function to open URL in existing tab or create new one
   function openUrlInTabOrCreate(targetUrl, event) {
     event.preventDefault();
@@ -148,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // detectedProject: detectedProject
 
     const environmentsContainer = document.getElementById('environments');
-    environmentsContainer.innerHTML = '';
+    while (environmentsContainer.firstChild) environmentsContainer.firstChild.remove();
 
     // Hide infobox and footer on extension pages (e.g. settings)
     const footer = document.querySelector('.popup-footer');
@@ -181,8 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const envTitle = tld === 'test' ? 'ddev' : (tld === 'local' ? 'local' : (tld === 'ch' ? 'live' : '??'));
         const title = encodeURIComponent(envTitle);
 
-        const settingsUrl = chrome.runtime.getURL(`settings.html?project=new&domain=${domain}&tld=${tld}&title=${title}`);
-        chrome.tabs.create({ url: settingsUrl });
+        openOrFocusSettings(`project=new&domain=${domain}&tld=${tld}&title=${title}`);
       });
 
       projectId = 0;
@@ -578,8 +592,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Settings button handler
   document.getElementById('open-settings').addEventListener('click', (e) => {
     e.preventDefault();
-    const settingsUrl = chrome.runtime.getURL(`settings.html?project=${projectId}`);
-    chrome.tabs.create({ url: settingsUrl });
+    openOrFocusSettings(`project=${projectId}`);
   });
 
 });

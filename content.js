@@ -95,43 +95,61 @@ function createColorBadge(color) {
   document.body.appendChild(badge);
 }
 
-// Listen for storage changes to update badge in real-time
-chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (!chrome.runtime?.id) return;
-  if (areaName === 'sync' && changes.showColorBadge) {
-    const existingBadge = document.getElementById('env-switcher-color-badge');
-    if (changes.showColorBadge.newValue === false && existingBadge) {
-      existingBadge.remove();
-    } else if (changes.showColorBadge.newValue === true) {
+if (!window.__envSwitcherLoaded) {
+  window.__envSwitcherLoaded = true;
+
+  // Listen for storage changes to update badge in real-time
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (!chrome.runtime?.id) return;
+    if (areaName !== 'sync') return;
+
+    if (changes.showColorBadge) {
+      const existingBadge = document.getElementById('env-switcher-color-badge');
+      if (changes.showColorBadge.newValue === false && existingBadge) {
+        existingBadge.remove();
+      } else if (changes.showColorBadge.newValue === true) {
+        overlayColorBadge();
+      }
+    }
+
+    // Re-render badge when environments change (color edits, add/remove)
+    if (changes.settingsJson) {
+      const existingBadge = document.getElementById('env-switcher-color-badge');
+      if (existingBadge) existingBadge.remove();
       overlayColorBadge();
     }
+  });
+
+  if (document.readyState === 'loading') {
+    // The document is still loading, wait for the DOMContentLoaded event
+    document.addEventListener("DOMContentLoaded", handleDOMContentLoaded, { passive: true });
+  } else {
+    // The document has already finished loading
+    handleDOMContentLoaded();
   }
-});
 
-if (document.readyState === 'loading') {
-  // The document is still loading, wait for the DOMContentLoaded event
-  document.addEventListener("DOMContentLoaded", handleDOMContentLoaded, { passive: true });
+  // TYPO3 backend uses client-side navigation (SPA), so we need to
+  // detect URL changes and re-extract the UID.
+  if (typeof navigation !== 'undefined') {
+    // Modern Navigation API
+    navigation.addEventListener('navigatesuccess', () => extractAndSendUid());
+  } else {
+    // Fallback: intercept pushState/replaceState and listen for popstate
+    const originalPushState = history.pushState.bind(history);
+    const originalReplaceState = history.replaceState.bind(history);
+    history.pushState = function(...args) {
+      originalPushState(...args);
+      extractAndSendUid();
+    };
+    history.replaceState = function(...args) {
+      originalReplaceState(...args);
+      extractAndSendUid();
+    };
+    window.addEventListener('popstate', () => extractAndSendUid());
+  }
 } else {
-  // The document has already finished loading
-  handleDOMContentLoaded();
-}
-
-// TYPO3 backend uses client-side navigation (SPA), so we need to
-// detect URL changes and re-extract the UID.
-if (typeof navigation !== 'undefined') {
-  // Modern Navigation API
-  navigation.addEventListener('navigatesuccess', () => extractAndSendUid());
-} else {
-  // Fallback: intercept pushState/replaceState and listen for popstate
-  const originalPushState = history.pushState.bind(history);
-  const originalReplaceState = history.replaceState.bind(history);
-  history.pushState = function(...args) {
-    originalPushState(...args);
-    extractAndSendUid();
-  };
-  history.replaceState = function(...args) {
-    originalReplaceState(...args);
-    extractAndSendUid();
-  };
-  window.addEventListener('popstate', () => extractAndSendUid());
+  // Re-injected: just refresh the badge
+  const existing = document.getElementById('env-switcher-color-badge');
+  if (existing) existing.remove();
+  overlayColorBadge();
 }

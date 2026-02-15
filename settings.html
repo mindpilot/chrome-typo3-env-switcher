@@ -60,6 +60,11 @@
         <button id="add-project"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add Project</button>
       </div>
 
+        <div class="permission-section">
+            <h2>Permissions</h2>
+            <div id="permissions-status" class="permissions-status hidden"></div>
+        </div>
+
       <div class="import-export-section">
         <h2>Import/Export</h2>
         <div class="button-container">
@@ -150,7 +155,7 @@ page.meta {
       <table>
         <tr>
           <th>Version</th>
-          <td>1.0</td>
+          <td>1.0.0</td>
         </tr>
         <tr>
           <th>Requirements</th>
@@ -190,6 +195,7 @@ page.meta {
   </main>
 </div>
 
+<script src="permissions.js"></script>
 <script src="settings.js"></script>
 </body>
 </html>

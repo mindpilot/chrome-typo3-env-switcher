@@ -1,8 +1,41 @@
+importScripts('permissions.js');
+
 let currentUid = null;
 
-chrome.runtime.onInstalled.addListener(() => {
-  //console.log('Extension installed');
+chrome.runtime.onInstalled.addListener(async (details) => {
+  // On install or update, sync content scripts for granted origins
+  const result = await chrome.storage.sync.get(['settingsJson']);
+  const settingsJson = result.settingsJson;
+
+  if (details.reason === 'update' && settingsJson) {
+    // Migration: if upgrading from old version that had <all_urls>,
+    // narrow permissions to only configured hosts
+    const current = await chrome.permissions.getAll();
+    const hasAllUrls = (current.origins || []).some(
+      o => o === '<all_urls>' || o === '*://*/*'
+    );
+    if (hasAllUrls) {
+      const needed = Permissions.buildOriginPatterns(settingsJson);
+      // Remove the blanket permission
+      try {
+        await chrome.permissions.remove({ origins: ['<all_urls>', '*://*/*'] });
+      } catch (e) { /* may not exist */ }
+      // Re-request only what's needed (non-interactive in service worker,
+      // but origins previously granted stay granted after narrowing)
+      if (needed.length > 0) {
+        try {
+          await chrome.permissions.request({ origins: needed });
+        } catch (e) { /* expected in non-interactive context */ }
+      }
+    }
+  }
+
+  await Permissions.syncContentScripts();
 });
+
+// Re-sync content scripts whenever permissions change
+chrome.permissions.onAdded.addListener(() => Permissions.syncContentScripts());
+chrome.permissions.onRemoved.addListener(() => Permissions.syncContentScripts());
 
 // load project settings
 chrome.storage.sync.get(['settingsJson'], (result) => {
@@ -102,6 +135,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
 
       sendResponse({ showBadge: false, reason: 'no matching environment' });
+    });
+    return true; // Indicates async response
+  }
+  else if (request.type === "SYNC_CONTENT_SCRIPTS") {
+    Permissions.syncContentScripts().then(() => {
+      sendResponse({ status: "success" });
     });
     return true; // Indicates async response
   }

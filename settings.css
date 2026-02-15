@@ -557,6 +557,42 @@ button.destructive:hover {
     color: var(--color-error-text);
 }
 
+/* Permissions status */
+.permissions-status {
+    margin-top: 12px;
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 3px;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+}
+
+.permissions-status .perm-host {
+    display: inline-block;
+    padding: 1px 6px;
+    margin: 2px 2px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: monospace;
+}
+
+.permissions-status .perm-granted {
+    background-color: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
+    color: var(--color-success-text);
+}
+
+.permissions-status .perm-pending {
+    background-color: var(--color-warning-bg);
+    border: 1px solid var(--color-warning-border);
+}
+
+.permissions-status button {
+    margin-top: 6px;
+    font-size: 12px;
+    padding: 4px 10px;
+}
+
 code {
     padding: 1px 3px;
     background-color: var(--color-bg-code);
