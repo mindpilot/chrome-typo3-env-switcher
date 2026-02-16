@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TYPO3 - Env Switcher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Andy Meier",
   "description": "Streamline your TYPO3 workflow. Hyperjump to different environments of a TYPO3 site. Get the UID of the current page.",
   "icons": {
