@@ -266,6 +266,7 @@ a:link {
     align-items: center;
     cursor: pointer;
     position: relative;
+    z-index: 2;
 }
 
 .link-title-wrapper .link-title {
@@ -276,6 +277,21 @@ a:link {
 }
 .column.pinned .link-title {
     color: var(--color-card-title-active);
+}
+
+/* Color triangle indicator (behind corner fold) */
+.column::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 18px 18px 0;
+    border-color: transparent var(--env-color, transparent) transparent transparent;
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* Corner fold indicator */
@@ -291,6 +307,7 @@ a:link {
     opacity: 0;
     transition: opacity 0.15s;
     pointer-events: none;
+    z-index: 1;
 }
 
 /* Show grey corner on hover (all cards) */

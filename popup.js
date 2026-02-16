@@ -239,6 +239,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentEnvColumn = document.createElement('div');
     currentEnvColumn.className = 'column active' + (isCurrentPinned ? ' pinned' : '');
 
+    const currentEnvColor = environments[currentEnvIndex].color;
+    if (currentEnvColor && currentEnvColor.replace('#', '').toLowerCase() !== 'ffffff') {
+      currentEnvColumn.style.setProperty('--env-color', currentEnvColor);
+    }
+
     const currentEnvTitleWrapper = document.createElement('div');
     currentEnvTitleWrapper.className = 'link-title-wrapper';
 
@@ -323,6 +328,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const columnDiv = document.createElement('div');
       columnDiv.className = 'column' + (isPinned ? ' pinned' : '');
+
+      const envColor = environment.color;
+      if (envColor && envColor.replace('#', '').toLowerCase() !== 'ffffff') {
+        columnDiv.style.setProperty('--env-color', envColor);
+      }
 
       const titleWrapper = document.createElement('div');
       titleWrapper.className = 'link-title-wrapper';
