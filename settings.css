@@ -9,6 +9,7 @@
     --color-text-muted: #a6a6a6;
     --color-link: #3962c2;
     --color-text-input-name: #000000;
+    --color-text-input-name-focus: #000000;
 
     /* Backgrounds */
     --color-bg: #fff;
@@ -400,7 +401,10 @@ input[type="color"] {
     display: flex;
     gap: 8px;
 }
-
+.environment {
+    display: flex;
+    align-items: center;
+}
 .environment.new {
     margin-top: 15px;
     margin-bottom: 15px;
@@ -437,6 +441,7 @@ input.name {
 
 input.name:focus {
     background-image: none;
+    color: var(--color-text-input-name-focus);
 }
 input.name:focus::placeholder {
     color: var(--color-text-muted);
@@ -655,6 +660,7 @@ td {
         --color-text-inverse: #fff;
         --color-link: #FF8700;
         --color-text-input-name: #fff;
+        --color-text-input-name-focus: #000;
 
         --color-bg: #1e1e1e;
         --color-bg-primary: var(--color-link);
