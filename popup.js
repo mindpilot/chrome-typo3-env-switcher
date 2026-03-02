@@ -187,7 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
       settingsLink.textContent = 'Settings';
       missingEnvironmentInfo.append(settingsLink, '.');
       copyButton.classList.add('hidden');
-      environmentsContainer.appendChild(missingEnvironmentInfo);
+      while (message.firstChild) message.firstChild.remove();
+      message.appendChild(missingEnvironmentInfo);
+      footer.classList.add('hidden');
 
       // Add event listener to the settings link
       document.getElementById('open-settings-link').addEventListener('click', (e) => {
@@ -474,6 +476,19 @@ document.addEventListener("DOMContentLoaded", () => {
   function fetchAndUpdateUid() {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
+
+      // Guard against restricted URLs (chrome://, about:, etc.) that cannot be scripted
+      if (!tab.url || /^(chrome|chrome-extension|about|edge):/.test(tab.url)) {
+        chrome.runtime.sendMessage({ type: "CLEAR_UID" });
+        lastKnownUid = null;
+        lastKnownUrl = null;
+        lastKnownTab = null;
+        setPopupState('message');
+        message.innerText = 'Cannot access browser internal pages.';
+        document.querySelector('.popup-footer').classList.add('hidden');
+        return;
+      }
+
       const url = new URL(tab.url);
 
       // Check if in TYPO3 backend
@@ -577,11 +592,23 @@ document.addEventListener("DOMContentLoaded", () => {
           return uid;
         }
       }, (results) => {
+        if (chrome.runtime.lastError) {
+          console.warn('Script injection failed:', chrome.runtime.lastError.message);
+          chrome.runtime.sendMessage({ type: "CLEAR_UID" });
+          lastKnownUid = null;
+          lastKnownUrl = null;
+          lastKnownTab = null;
+          setPopupState('message');
+          message.innerText = 'Cannot access this page.';
+          return;
+        }
         const uid = results?.[0]?.result || null;
 
         // Keep service worker in sync
         if (uid) {
           chrome.runtime.sendMessage({ type: "SET_UID", uid });
+        } else {
+          chrome.runtime.sendMessage({ type: "CLEAR_UID" });
         }
 
         // Store values for re-rendering on pin toggle
@@ -589,13 +616,17 @@ document.addEventListener("DOMContentLoaded", () => {
         lastKnownUrl = url;
         lastKnownTab = tab;
 
-        updateLinks(uid, url, tab);
+        const projectLinked = updateLinks(uid, url, tab);
 
         if (uid) {
-          setPopupState('details');
           pageTitle.innerText = `${tab.title}`;
           setButtonContent('Page-UID ' + uid);
           copyButton.classList.remove('hidden');
+          if (projectLinked !== false) {
+            setPopupState('details');
+          } else {
+            loading.classList.add('hidden');
+          }
         } else {
           loading.classList.add('hidden');
           copyButton.classList.add('hidden');

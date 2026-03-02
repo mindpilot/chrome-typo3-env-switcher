@@ -37,6 +37,50 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 chrome.permissions.onAdded.addListener(() => Permissions.syncContentScripts());
 chrome.permissions.onRemoved.addListener(() => Permissions.syncContentScripts());
 
+// Refresh badge by re-extracting the UID from the given tab
+async function refreshBadgeForTab(tabId) {
+  try {
+    const results = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        let uid = document.body?.getAttribute('data-uid');
+        if (!uid) uid = document.head?.getAttribute('data-uid');
+        if (!uid) uid = document.querySelector('meta[name=pageid]')?.getAttribute('content');
+        if (!uid) {
+          const url = new URL(location.href);
+          if (url.pathname.includes('/typo3/module/web/layout') || url.pathname.includes('/typo3/module/web/list')) {
+            uid = url.searchParams.get('id');
+          }
+        }
+        return uid || null;
+      }
+    });
+    const uid = results?.[0]?.result || null;
+    currentUid = uid;
+    chrome.action.setBadgeText({ text: uid ?? '' });
+    if (uid) {
+      chrome.action.setBadgeTextColor({ color: 'white' });
+      chrome.action.setBadgeBackgroundColor({ color: 'red' });
+    }
+  } catch (e) {
+    // Restricted URL (chrome://, about:, etc.) or no host permission — clear badge
+    currentUid = null;
+    chrome.action.setBadgeText({ text: '' });
+  }
+}
+
+// Refresh badge on tab switch
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  refreshBadgeForTab(activeInfo.tabId);
+});
+
+// Refresh badge on page load (covers navigation within the same tab)
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.active) {
+    refreshBadgeForTab(tabId);
+  }
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === "SET_UID") {
     currentUid = request.uid;
