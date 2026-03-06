@@ -12,6 +12,7 @@
     --color-bg-secondary: #f0f0f0;
     --color-bg-hover: #e0e0e0;
     --color-bg-card: #ccc;
+    --color-bg-card-hover: #e6e6e6;
     --color-bg-card-active: #e6e6e6;
     --color-bg-card-pinned: #ccc;
     --color-bg-infobox: lightyellow;
@@ -38,7 +39,7 @@
     --color-icon: #000;
     /* fill='rgb(255,255,255)' to match white background */
     --icon-corner-fold-hover: url("data:image/svg+xml,<svg viewBox='0 0 18 18' xmlns='http://www.w3.org/2000/svg'><g transform='matrix(6.12323e-17,-1,1,6.12323e-17,0,18)'><path d='M0,0L18,0L0,18L0,0Z' fill='rgb(150,150,150)'/></g><g transform='matrix(1.5,0,0,1.5,-9,0)'><path d='M6,0L18,0L18,12L6,0Z' fill='rgb(255,255,255)'/></g></svg>");
-    --icon-corner-fold-pinned: url("data:image/svg+xml,<svg viewBox='0 0 18 18' xmlns='http://www.w3.org/2000/svg'><g transform='matrix(6.12323e-17,-1,1,6.12323e-17,0,18)'><path d='M0,0L18,0L0,18L0,0Z' fill='rgb(255,152,0)'/></g><g transform='matrix(1.5,0,0,1.5,-9,0)'><path d='M6,0L18,0L18,12L6,0Z' fill='rgb(255,255,255)'/></g></svg>");
+    --icon-pin: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 17v5'/><path d='M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z'/></svg>");
 }
 
 /* ===========================
@@ -198,6 +199,13 @@ a:link {
     border-bottom: solid 4px var(--color-bg-card);
     padding: 5px 8px;
 }
+.column:hover {
+    background-color: var(--color-bg-card-hover);
+}
+
+.column:hover a:link {
+    color: var(--color-link-hover);
+}
 
 .column a:link {
     text-decoration: none;
@@ -205,9 +213,6 @@ a:link {
     overflow: hidden;
     white-space: nowrap;
     color: var(--color-link);
-}
-.column.active a:link, .column.pinned a:link {
-    color: var(--color-link-active);
 }
 
 .column a:hover {
@@ -248,15 +253,12 @@ a:link {
 
 .column.pinned {
     position: relative;
-    background-color: var(--color-bg-card-pinned);
 }
 .column.active {
     border-bottom-color: var(--color-border-active);
-    background-color: var(--color-bg-card-active);
 }
 .column.active.pinned {
     border-bottom-color: var(--color-border-active);
-    background-color: var(--color-bg-card-active);
 }
 
 /* Title wrapper - clickable area for pinning */
@@ -272,24 +274,18 @@ a:link {
 .link-title-wrapper .link-title {
     flex: 1;
 }
-.column.active .link-title {
-    color: var(--color-card-title-active);
-}
-.column.pinned .link-title {
-    color: var(--color-card-title-active);
-}
 
-/* Color triangle indicator (behind corner fold) */
+/* Color triangle indicator (top-left corner) */
 .column::after {
     content: '';
     position: absolute;
     top: 0;
-    right: 0;
+    left: 0;
     width: 0;
     height: 0;
     border-style: solid;
-    border-width: 0 18px 18px 0;
-    border-color: transparent var(--env-color, transparent) transparent transparent;
+    border-width: 14px 14px 0 0;
+    border-color: var(--env-color, transparent) transparent transparent transparent;
     pointer-events: none;
     z-index: 0;
 }
@@ -316,9 +312,12 @@ a:link {
     opacity: 1;
 }
 
-/* Pinned state: orange corner (overrides hover) */
+/* Pinned state: pin icon at top-right (overrides hover) */
 .column.pinned::before {
-    background-image: var(--icon-corner-fold-pinned);
+    background-image: var(--icon-pin);
+    background-position: center;
+    margin-top: 3px;
+    margin-right: 2px;
     opacity: 1;
 }
 
@@ -492,9 +491,10 @@ input.tld {
         --color-bg: #333333;
         --color-bg-secondary: #2d2d2d;
         --color-bg-hover: #3a3a3a;
-        --color-bg-card: #3a3a3a;
+        --color-bg-card: #4f4e4e;
+        --color-bg-card-hover: #bababa;
         --color-bg-infobox: #4d4d4d;
-        --color-bg-tooltip: #3a3520;
+        --color-bg-tooltip: #636363;
         --color-bg-card-active: #bababa;
         --color-bg-card-pinned: #939393;
 
@@ -502,7 +502,8 @@ input.tld {
         --color-border-active: #e0e0e0;
         --color-border-infobox: #777;
 
-        --color-link: #6ba3d6;
+        --color-link: #ff9800;
+        --color-link-hover: #000000;
         --color-link-active: #000000;
         --color-card-title: #ffffff;
         --color-card-title-active: #000000;
@@ -510,7 +511,7 @@ input.tld {
         --color-icon: #e0e0e0;
         /* with dark background rgb (51,51,51) */
         --icon-corner-fold-hover: url("data:image/svg+xml,<svg viewBox='0 0 18 18' xmlns='http://www.w3.org/2000/svg'><g transform='matrix(6.12323e-17,-1,1,6.12323e-17,0,18)'><path d='M0,0L18,0L0,18L0,0Z' fill='rgb(150,150,150)'/></g><g transform='matrix(1.5,0,0,1.5,-9,0)'><path d='M6,0L18,0L18,12L6,0Z' fill='rgb(51,51,51)'/></g></svg>");
-        --icon-corner-fold-pinned: url("data:image/svg+xml,<svg viewBox='0 0 18 18' xmlns='http://www.w3.org/2000/svg'><g transform='matrix(6.12323e-17,-1,1,6.12323e-17,0,18)'><path d='M0,0L18,0L0,18L0,0Z' fill='rgb(255,152,0)'/></g><g transform='matrix(1.5,0,0,1.5,-9,0)'><path d='M6,0L18,0L18,12L6,0Z' fill='rgb(51,51,51)'/></g></svg>");
+        --icon-pin: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e0e0e0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 17v5'/><path d='M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z'/></svg>");
     }
         .logo-env-switcher {
             background: url("icons/logo-env-switcher-horizontal-negative.svg");
