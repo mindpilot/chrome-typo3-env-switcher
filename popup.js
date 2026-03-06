@@ -105,10 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  function envKeyToIdent(envKey) {
-    return 'env-card-' + envKey.replace(/[^a-zA-Z0-9-]/g, '-');
-  }
-
   // Function to toggle pin for an environment
   function togglePin(envKey) {
     if (pinnedEnvironment === envKey) {
@@ -117,17 +113,11 @@ document.addEventListener("DOMContentLoaded", () => {
       pinnedEnvironment = envKey;
     }
     chrome.storage.sync.set({ pinnedEnvironment }, () => {
-      const doRender = () => {
-        if (lastKnownUrl && lastKnownTab) {
-          updateLinks(lastKnownUid, lastKnownUrl, lastKnownTab);
-        } else {
-          fetchAndUpdateUid();
-        }
-      };
-      if (document.startViewTransition) {
-        document.startViewTransition(doRender);
+      // Re-render with stored values instead of re-fetching
+      if (lastKnownUrl && lastKnownTab) {
+        updateLinks(lastKnownUid, lastKnownUrl, lastKnownTab);
       } else {
-        doRender();
+        fetchAndUpdateUid();
       }
     });
   }
@@ -249,7 +239,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const currentEnvColumn = document.createElement('div');
     currentEnvColumn.className = 'column active' + (isCurrentPinned ? ' pinned' : '');
-    currentEnvColumn.style.viewTransitionName = envKeyToIdent(currentEnvKey);
 
     const currentEnvColor = environments[currentEnvIndex].color;
     if (currentEnvColor && currentEnvColor.replace('#', '').toLowerCase() !== 'ffffff') {
@@ -340,7 +329,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const columnDiv = document.createElement('div');
       columnDiv.className = 'column' + (isPinned ? ' pinned' : '');
-      columnDiv.style.viewTransitionName = envKeyToIdent(envKey);
 
       const envColor = environment.color;
       if (envColor && envColor.replace('#', '').toLowerCase() !== 'ffffff') {
