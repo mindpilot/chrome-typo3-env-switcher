@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const addEnvironmentButton = document.getElementById('add-environment');
   const inputNewName = document.getElementById('new-env-name');
   const inputNewDomain = document.getElementById('new-env-domain');
-  const inputNewTld = document.getElementById('new-env-tld');
 
   let settingsJson = null;
   let projectId = 0;
@@ -33,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   const urlProjectId = urlParams.get('project');
   const urlDomain = urlParams.get('domain');
-  const urlTld = urlParams.get('tld');
   const urlTitle = urlParams.get('title');
 
   // Load settings on page load
@@ -41,8 +39,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if (response && response.settingsJson) {
       settingsJson = response.settingsJson;
 
+      // Run one-time migration: merge legacy tld field into domain
+      if (settingsJson.projects) {
+        let needsMigration = false;
+        settingsJson.projects.forEach(proj =>
+          proj.environments.forEach(env => {
+            if (env.tld) {
+              env.domain = env.domain + '.' + env.tld;
+              delete env.tld;
+              needsMigration = true;
+            }
+          })
+        );
+        if (needsMigration) saveSettings();
+      }
+
       // Check if we need to create a new project from URL parameters
-      if (urlProjectId === 'new' && urlDomain && urlTld && urlTitle) {
+      if (urlProjectId === 'new' && urlDomain && urlTitle) {
         // Auto-create new project with prepopulated environment
         const nextProjectNumber = settingsJson.projects ? settingsJson.projects.length : 0;
         const newProject = {
@@ -51,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
             {
               "name": decodeURIComponent(urlTitle),
               "domain": urlDomain,
-              "tld": urlTld,
               "color": "#ffffff"
             }
           ]
@@ -120,19 +132,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const domainInput = document.createElement('input');
     domainInput.type = 'text';
     domainInput.className = 'domain';
-    domainInput.placeholder = 'Domain';
+    domainInput.placeholder = 'Full domain (e.g. dev.myproject.test)';
     domainInput.value = env.domain || '';
     domainInput.id = `domain-${index}`;
     envDiv.appendChild(domainInput);
-
-    // Create TLD input
-    const tldInput = document.createElement('input');
-    tldInput.type = 'text';
-    tldInput.className = 'tld';
-    tldInput.placeholder = 'TLD';
-    tldInput.value = env.tld || '';
-    tldInput.id = `tld-${index}`;
-    envDiv.appendChild(tldInput);
 
     // Create remove button
     const removeBtn = document.createElement('button');
@@ -165,12 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
       settingsJson.projects[projectIndex].environments[index].color = e.target.value;
       debouncedSave();
     });
-
-    tldInput.addEventListener('input', (e) => {
-      settingsJson.projects[projectIndex].environments[index].tld = e.target.value;
-      debouncedSave();
-    });
-    tldInput.addEventListener('blur', () => { if (showColorBadge) syncPermissionsAndScripts(); });
 
     return envDiv;
   }
@@ -434,14 +431,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const newEnvironment = {
       name: inputNewName.value,
       domain: inputNewDomain.value,
-      color: "#ffffff",
-      tld: inputNewTld.value
+      color: "#ffffff"
     };
 
-    if (newEnvironment.name != '' && newEnvironment.domain != '' && newEnvironment.tld != '') {
+    if (newEnvironment.name != '' && newEnvironment.domain != '') {
       inputNewName.value = '';
       inputNewDomain.value = '';
-      inputNewTld.value = '';
       addEnvironmentButton.classList.add('disabled');
       addEnvironmentButton.setAttribute('disabled', 'disabled');
       settingsJson.projects[projectIndex].environments.push(newEnvironment);
@@ -558,7 +553,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function watchNewInputFields() {
-    if (inputNewName.value != '' && inputNewDomain.value != '' && inputNewTld.value != '') {
+    if (inputNewName.value != '' && inputNewDomain.value != '') {
       addEnvironmentButton.classList.remove('disabled');
       addEnvironmentButton.removeAttribute('disabled');
     } else {
@@ -573,8 +568,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   inputNewName.addEventListener('input', watchNewInputFields);
   inputNewDomain.addEventListener('input', watchNewInputFields);
-  inputNewTld.addEventListener('input', watchNewInputFields);
-  inputNewTld.addEventListener('keypress', function(e) {
+  inputNewDomain.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
       addEnvironment();
       inputNewName.focus();

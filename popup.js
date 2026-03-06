@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const proj = settingsJson.projects[i];
       for (let envIdx = 0; envIdx < proj.environments.length; envIdx++) {
         const env = proj.environments[envIdx];
-        if (url.hostname.endsWith(env.domain + '.' + env.tld)) {
+        if (url.hostname.endsWith(env.domain)) {
           const project = { ...proj, id: i, environmentName: env.name, environmentIndex: envIdx };
           settingsJson.selectedProjectIndex = i;
           return project;
@@ -195,16 +195,15 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('open-settings-link').addEventListener('click', (e) => {
         e.preventDefault();
 
-        // Parse domain and TLD from hostname
         const hostname = url.hostname;
-        const parts = hostname.split('.');
-        const tld = parts[parts.length - 1];
-        const domain = parts.slice(0, -1).join('.');
-
-        const envTitle = tld === 'test' ? 'ddev' : (tld === 'local' ? 'local' : (tld === 'ch' ? 'live' : '??'));
+        const domain = hostname;
+        const envTitle = hostname.endsWith('.test')  ? 'ddev'
+                       : hostname.endsWith('.local') ? 'local'
+                       : hostname.endsWith('.ch')    ? 'live'
+                       : '??';
         const title = encodeURIComponent(envTitle);
 
-        openOrFocusSettings(`project=new&domain=${domain}&tld=${tld}&title=${title}`);
+        openOrFocusSettings(`project=new&domain=${domain}&title=${title}`);
       });
 
       projectId = 0;
@@ -318,7 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const envCards = [];
     for (let envIndex = 0; envIndex < environments.length; envIndex++) {
       const environment = environments[envIndex];
-      const testDomain = `${environment.domain}.${environment.tld}`;
+      const testDomain = environment.domain;
 
       // Skip the current environment (it's handled separately as currentEnvColumn)
       if (`${url.protocol}//${testDomain}` === url.origin) {
@@ -401,7 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Current environment is rendered in its position, pinned at the end
     for (let envIndex = 0; envIndex < environments.length; envIndex++) {
       const env = environments[envIndex];
-      const testDomain = `${env.domain}.${env.tld}`;
+      const testDomain = env.domain;
       const isCurrentEnv = `${url.protocol}//${testDomain}` === url.origin;
       const envKey = `${projectId}-${envIndex}`;
       const isPinnedEnv = pinnedEnvironment === envKey;
@@ -439,8 +438,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const linkListModule = document.getElementById(`link-${environment.name}-list-module`);
       const linkSamePage = document.getElementById(`link-${environment.name}-same-page`);
 
-      linkSamePage.href = url.href.replace(url.hostname, `${environment.domain}.${environment.tld}`);
-      linkSamePage.innerText = `${environment.domain}.${environment.tld}`;
+      linkSamePage.href = url.href.replace(url.hostname, environment.domain);
+      linkSamePage.innerText = environment.domain;
       linkSamePage.title = `Open this page on ${environment.name}`;
 
       // Add click handler with existing tab detection
@@ -551,7 +550,7 @@ document.addEventListener("DOMContentLoaded", () => {
             for (let envIndex = 0; envIndex < environments.length; envIndex++) {
               if (envIndex === detectedProject.environmentIndex) continue;
               const env = environments[envIndex];
-              const envDomain = `${env.domain}.${env.tld}`;
+              const envDomain = env.domain;
               const envUrl = url.href.replace(url.hostname, envDomain);
 
               const link = document.createElement('a');

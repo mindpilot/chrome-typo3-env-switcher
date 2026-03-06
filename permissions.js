@@ -10,7 +10,7 @@ const Permissions = {
 
   /**
    * Build deduplicated origin patterns from configured environments.
-   * E.g. "dev.myproject" + "local" → "*://dev.myproject.local/*"
+   * E.g. "dev.myproject.local" → "*://dev.myproject.local/*"
    *
    * @param {object} settingsJson - The stored settings object with .projects[]
    * @returns {string[]} Array of unique origin patterns
@@ -22,8 +22,8 @@ const Permissions = {
     for (const project of settingsJson.projects) {
       if (!project.environments) continue;
       for (const env of project.environments) {
-        if (env.domain && env.tld) {
-          patterns.add(`*://${env.domain}.${env.tld}/*`);
+        if (env.domain) {
+          patterns.add(`*://${env.domain}/*`);
         }
       }
     }

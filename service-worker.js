@@ -147,7 +147,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const url = new URL(tabUrl);
         for (const project of settingsJson.projects) {
           for (const env of project.environments) {
-            const expectedHost = env.domain + '.' + env.tld;
+            const expectedHost = env.domain;
             if (url.hostname.endsWith(expectedHost)) {
               sendResponse({
                 showBadge: true,
