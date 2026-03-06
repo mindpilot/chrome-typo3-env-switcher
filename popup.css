@@ -342,6 +342,18 @@ a:link {
     gap: 10px;
 }
 
+/* Suppress full-page cross-fade; let individual cards animate */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+}
+
+/* Tune card movement animation */
+::view-transition-group(*) {
+    animation-duration: 300ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .link {
     display: block;
     margin-bottom: 5px;
