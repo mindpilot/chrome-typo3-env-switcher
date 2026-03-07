@@ -78,9 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
         projectId = nextProjectNumber;
         settingsJson.selectedProjectIndex = projectId;
 
-        // Save the new project; sync permissions only if badge is on
+        // Save the new project; permissions must be granted via user gesture
+        // (the "Grant Permissions" button rendered by renderPermissionsStatus)
         saveSettings();
-        if (showColorBadge) syncPermissionsAndScripts();
       } else if (urlProjectId !== null && urlProjectId !== 'new') {
         // Use URL parameter if provided, otherwise use selected project
         projectId = parseInt(urlProjectId);
