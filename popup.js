@@ -476,14 +476,18 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
 
-      // Guard against restricted URLs (chrome://, about:, etc.) that cannot be scripted
-      if (!tab.url || /^(chrome|chrome-extension|about|edge):/.test(tab.url)) {
+      // Guard against restricted URLs (chrome://, about:, extension gallery, etc.) that cannot be scripted
+      const isRestrictedScheme = !tab.url || /^(chrome|chrome-extension|about|edge):/.test(tab.url);
+      const isExtensionGallery = /^https?:\/\/(chrome\.google\.com\/webstore|chromewebstore\.google\.com)\//.test(tab.url);
+      if (isRestrictedScheme || isExtensionGallery) {
         chrome.runtime.sendMessage({ type: "CLEAR_UID" });
         lastKnownUid = null;
         lastKnownUrl = null;
         lastKnownTab = null;
         setPopupState('message');
-        message.innerText = 'Cannot access browser internal pages.';
+        message.innerText = isExtensionGallery
+          ? 'Chrome Webstore is ignored.'
+          : 'Browser internal pages are ignored.';
         document.querySelector('.popup-footer').classList.add('hidden');
         return;
       }
