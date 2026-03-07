@@ -548,8 +548,7 @@ document.addEventListener("DOMContentLoaded", () => {
     settingsJson.projects.splice(projectIndex, 1);
     saveSettings();
     if (showColorBadge) syncPermissionsAndScripts();
-    renderProjectsDropdown(0);
-    renderProjectDetails(0);
+    location.reload();
   }
 
   function watchNewInputFields() {
