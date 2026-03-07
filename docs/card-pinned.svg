@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 50 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1.16279,0,0,1.16279,-75.5814,-122.093)">
-        <g id="live">
-            <path d="M108,123L108,159.74L65,159.74L65,105L90,105L108,123Z" style="fill:rgb(230,230,230);"/>
+<svg width="100%" height="100%" viewBox="0 0 50 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;">
+    <g id="click-to-pin" serif:id="click to pin">
+        <g transform="matrix(1.16279,0,0,1.16279,-75.5814,-122.093)">
+            <g id="live">
+                <path d="M108,123L108,159.74L65,159.74L65,105L90,105L108,123Z" style="fill:rgb(230,230,230);"/>
+            </g>
         </g>
-    </g>
-    <g transform="matrix(7.12003e-17,-1.16279,1.16279,7.12003e-17,29.0698,20.9302)">
-        <path d="M0,0L18,0L0,18L0,0Z" style="fill:rgb(242,175,13);fill-rule:nonzero;"/>
+        <g transform="matrix(7.12003e-17,-1.16279,1.16279,7.12003e-17,29.0698,20.9302)">
+            <g id="grey-click-to-pin">
+                <path d="M0,0L18,0L0,18L0,0Z" style="fill:rgb(102,102,102);fill-rule:nonzero;"/>
+            </g>
+        </g>
+        <g id="pin">
+            <g transform="matrix(1,0,0,1,13,28.1631)">
+                <path d="M12,17L12,22" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:2px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,13,28.1631)">
+                <path d="M9,10.76C9,11.518 8.569,12.213 7.89,12.55L6.11,13.45C5.431,13.787 5,14.482 5,15.24L5,16C5,16.549 5.451,17 6,17L18,17C18.549,17 19,16.549 19,16L19,15.24C19,14.482 18.569,13.787 17.89,13.45L16.11,12.55C15.431,12.213 15,11.518 15,10.76L15,7C15,6.451 15.451,6 16,6C17.097,6 18,5.097 18,4C18,2.903 17.097,2 16,2L8,2C6.903,2 6,2.903 6,4C6,5.097 6.903,6 8,6C8.549,6 9,6.451 9,7L9,10.76Z" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:2px;"/>
+            </g>
+        </g>
     </g>
 </svg>

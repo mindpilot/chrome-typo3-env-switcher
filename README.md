@@ -28,7 +28,7 @@ Click the extension icon to open the switcher popup.
 
 #### Frontend
 
-![pop-up](./docs/screenshot-frontend-light.png)
+![pop-up](./docs/screenshot-frontend-light.jpg)
 
 
 | Symbol                            | Description                                                                      |
