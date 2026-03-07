@@ -15,10 +15,10 @@ Chrome extension for TYPO3 CMS developers and editors. Streamlines the workflow 
 
 ### Requirements
 
-
-| Version | TYPO3   |
-| ------- | ------- |
-| 1.x     | ≥ 11.x |
+| Version | TYPO3   | Supported Browser                          |
+|---------| ------- |--------------------------------------------|
+| 1.0.1  | ≥ 11.x | Chrome/Edge 111+ / FF 126+ (Mozilla Store) |
+| 1.0.2  | ≥ 11.x | Chrome/Edge 111+                           |
 
 ## 📙 Documentation
 
