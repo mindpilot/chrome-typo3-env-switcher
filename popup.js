@@ -557,6 +557,9 @@ document.addEventListener("DOMContentLoaded", () => {
               link.className = 'backend-env-link';
               link.href = envUrl;
               link.textContent = `${env.name}`;
+              if (env.color && env.color.replace('#', '').toLowerCase() !== 'ffffff') {
+                link.style.setProperty('--env-color', env.color);
+              }
               link.title = `Open on ${env.name}`;
               link.addEventListener('click', (event) => {
                 openUrlInTabOrCreate(link.href, event);

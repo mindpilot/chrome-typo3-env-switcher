@@ -11,8 +11,8 @@
     --color-bg: #fff;
     --color-bg-secondary: #f0f0f0;
     --color-bg-hover: #e0e0e0;
-    --color-bg-card: #ccc;
-    --color-bg-card-hover: #e6e6e6;
+    --color-bg-card: #e6e6e6;
+    --color-bg-card-hover: #cccccc;
     --color-bg-card-active: #e6e6e6;
     --color-bg-card-pinned: #ccc;
     --color-bg-infobox: lightyellow;
@@ -201,10 +201,14 @@ a:link {
 }
 .column:hover {
     background-color: var(--color-bg-card-hover);
+    border-bottom: solid 4px var(--color-border-active);
 }
 
 .column:hover a:link {
     color: var(--color-link-hover);
+}
+.column:hover .link-title {
+    text-shadow: -1px -1px 2px var(--color-bg-card-hover);
 }
 
 .column a:link {
@@ -284,7 +288,7 @@ a:link {
     width: 0;
     height: 0;
     border-style: solid;
-    border-width: 14px 14px 0 0;
+    border-width: 25px 25px 0 0;
     border-color: var(--env-color, transparent) transparent transparent transparent;
     pointer-events: none;
     z-index: 0;
@@ -330,6 +334,7 @@ a:link {
     font-weight: bold;
     font-size: var(--font-size-title);
     color: var(--color-card-title);
+    text-shadow: -1px -1px 2px var(--color-bg-card);
 }
 
 .link-title svg {
@@ -442,6 +447,21 @@ input.tld {
     width: 100%;
     color: var(--color-text-primary);
     background-color: #cccccc;
+    position: relative;
+    overflow: hidden;
+}
+
+#environments a.backend-env-link::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 22px 22px 0 0;
+    border-color: var(--env-color, transparent) transparent transparent transparent;
+    pointer-events: none;
 }
 #environments a.backend-env-link:hover {
     background-color: #000000;
