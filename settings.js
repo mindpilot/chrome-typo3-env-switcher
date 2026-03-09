@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let settingsJson = null;
   let projectId = 0;
+  let suppressSelectChange = false;
 
   // Debounced save to avoid exceeding chrome.storage.sync write quota
   let saveTimeout = null;
@@ -36,8 +37,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load settings on page load
   chrome.runtime.sendMessage({ type: "GET_DOMAIN_CONFIG" }, (response) => {
-    if (response && response.settingsJson) {
+    if (response) {
       settingsJson = response.settingsJson;
+
+      // Fresh install: initialize empty structure
+      if (!settingsJson) {
+        settingsJson = { "selectedProjectIndex": 0, "projects": [] };
+      }
 
       // Run one-time migration: merge legacy tld field into domain
       if (settingsJson.projects) {
@@ -81,6 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Save the new project; permissions must be granted via user gesture
         // (the "Grant Permissions" button rendered by renderPermissionsStatus)
         saveSettings();
+
+        // Strip URL params so refresh won't re-create the project
+        history.replaceState(null, '', window.location.pathname);
       } else if (urlProjectId !== null && urlProjectId !== 'new') {
         // Use URL parameter if provided, otherwise use selected project
         projectId = parseInt(urlProjectId);
@@ -91,8 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       renderProjectDetails(projectId);
-    } else {
-      console.log('No settings found');
     }
   });
 
@@ -371,11 +378,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const projectDetails = document.getElementById('project-details');
     const environmentsEditContainer = document.getElementById('environments-edit-container');
     const projectDetailsWrap = document.getElementById('project-detailswrap');
+    const hasProjects = settingsJson.projects && settingsJson.projects.length > 0;
     projectDetails.textContent = "";
+
+    // Show/hide elements that require at least one project
+    document.querySelector('.project-selector').style.display = hasProjects ? '' : 'none';
+    document.getElementById('remove-project').style.display = hasProjects ? '' : 'none';
+    document.getElementById('export-settings').style.display = hasProjects ? '' : 'none';
+    document.querySelector('.permission-section').style.display = hasProjects ? '' : 'none';
+    document.querySelector('.import-export-section h2').style.display = hasProjects ? '' : 'none';
 
     let project = null;
 
-    if (settingsJson.projects != null && settingsJson.projects[projectIndex]) {
+    if (hasProjects && settingsJson.projects[projectIndex]) {
       project = settingsJson.projects[projectIndex];
     }
 
@@ -542,13 +557,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function removeProject() {
-    const projectOptionsCount = projectSelect.options.length;
-    const projectIndex = projectSelect.value;
-    if (projectOptionsCount <= 1) return;
+    const projectIndex = parseInt(projectSelect.value);
     settingsJson.projects.splice(projectIndex, 1);
-    saveSettings();
+
+    // Cancel any pending debounced save so it doesn't re-write stale data
+    clearTimeout(saveTimeout);
+
+    // Strip URL params so a future refresh won't re-trigger ?project=new
+    history.replaceState(null, '', window.location.pathname);
+
+    // Suppress the select change handler — renderProjectsDropdown will
+    // clear options which fires a change event that would re-save old data
+    suppressSelectChange = true;
+
+    if (settingsJson.projects.length === 0) {
+      // Last project removed: clear storage key entirely
+      settingsJson = { "selectedProjectIndex": 0, "projects": [] };
+      chrome.storage.sync.remove('settingsJson');
+      projectId = 0;
+    } else {
+      // Adjust selected index if needed
+      projectId = Math.min(projectIndex, settingsJson.projects.length - 1);
+      settingsJson.selectedProjectIndex = projectId;
+      saveSettings();
+    }
+
     if (showColorBadge) syncPermissionsAndScripts();
-    location.reload();
+    renderProjectDetails(projectId);
+
+    suppressSelectChange = false;
   }
 
   function watchNewInputFields() {
@@ -577,6 +614,7 @@ document.addEventListener("DOMContentLoaded", () => {
   addEnvironmentButton.addEventListener('click', addEnvironment);
 
   projectSelect.addEventListener('change', () => {
+    if (suppressSelectChange) return;
     projectId = projectSelect.value;
     settingsJson["selectedProjectIndex"] = projectId;
     saveSettings();

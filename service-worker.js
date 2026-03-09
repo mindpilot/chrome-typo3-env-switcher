@@ -106,18 +106,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   else if (request.type === "GET_DOMAIN_CONFIG") {
     chrome.storage.sync.get(['settingsJson'], (result) => {
-      const settingsJson = result.settingsJson || {
-        "selectedProjectIndex": 0,
-        "projects": [
-          {
-            "name": "Project 1",
-            "color": "#ffffff",
-            "environments": [
-            ]
-          }
-        ]
-      };
-      sendResponse({ settingsJson });
+      sendResponse({ settingsJson: result.settingsJson || null });
     });
     return true; // Indicates async response
   }

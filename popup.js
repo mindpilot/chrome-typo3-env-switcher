@@ -95,13 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
     pinnedEnvironment = result.pinnedEnvironment || null;
 
     chrome.runtime.sendMessage({ type: "GET_DOMAIN_CONFIG" }, (response) => {
-      if (response && response.settingsJson) {
-        settingsJson = response.settingsJson;
-        projectId = settingsJson.selectedProjectIndex ?? 0;
-        fetchAndUpdateUid();
-      } else {
-        console.log('No settings found');
-      }
+      settingsJson = (response && response.settingsJson) || { selectedProjectIndex: 0, projects: [] };
+      projectId = settingsJson.selectedProjectIndex ?? 0;
+      fetchAndUpdateUid();
     });
   });
 
@@ -135,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === 'sync' && changes.settingsJson) {
       // Settings changed, updating popup
-      settingsJson = changes.settingsJson.newValue;
+      settingsJson = changes.settingsJson.newValue || { selectedProjectIndex: 0, projects: [] };
       projectId = settingsJson.selectedProjectIndex ?? 0;
       fetchAndUpdateUid();
     }
