@@ -598,8 +598,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Event listeners
-  document.getElementById('remove-project').addEventListener('click', removeProject);
+  // Confirm-delete modal
+  const confirmModal = document.getElementById('confirm-delete-modal');
+  const confirmMessage = document.getElementById('confirm-delete-message');
+
+  const modalLastProject = document.getElementById('confirm-delete-last-project');
+
+  document.getElementById('remove-project').addEventListener('click', function () {
+    const projectIndex = parseInt(projectSelect.value);
+    const projectName = settingsJson.projects[projectIndex]?.name || 'this project';
+    confirmMessage.textContent = 'Sure to delete project "' + projectName + '"?';
+    modalLastProject.classList.toggle('hidden', settingsJson.projects.length > 1);
+    confirmModal.classList.remove('hidden');
+  });
+
+  document.getElementById('modal-cancel').addEventListener('click', function () {
+    confirmModal.classList.add('hidden');
+  });
+
+  document.getElementById('modal-confirm-delete').addEventListener('click', function () {
+    removeProject();
+    confirmModal.classList.add('hidden');
+  });
+
+  confirmModal.addEventListener('click', function (e) {
+    if (e.target === confirmModal) confirmModal.classList.add('hidden');
+  });
   document.getElementById('add-project').addEventListener('click', addProject);
 
   inputNewName.addEventListener('input', watchNewInputFields);

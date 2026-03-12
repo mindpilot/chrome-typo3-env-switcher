@@ -63,7 +63,8 @@
         </div>
 
       <div class="import-export-section">
-        <h2>Import/Export</h2>
+        <h2>Import / Export</h2>
+        <p><em>Import replaces all existing projects!</em></p>
         <div class="button-container">
           <button id="export-settings"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>Export Settings</button>
           <input type="file" id="import-file-input" accept=".json" style="display: none;">
@@ -198,6 +199,21 @@ page.meta {
         browser's sync storage.</p>
     </section>
   </main>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div id="confirm-delete-modal" class="modal-overlay hidden">
+  <div class="modal-dialog">
+    <p id="confirm-delete-message"></p>
+    <p>
+      <span id="confirm-delete-last-project" class="modal-hint muted hidden">This is the last project you have set up.<br /></span>
+      <span class="modal-hint muted">Export your settings as backup before deleting.</span>
+    </p>
+    <div class="modal-actions">
+      <button id="modal-cancel">Cancel</button>
+      <button id="modal-confirm-delete" class="destructive">Delete this project</button>
+    </div>
+  </div>
 </div>
 
 <script src="permissions.js"></script>
